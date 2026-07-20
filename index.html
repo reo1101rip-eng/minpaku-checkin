@@ -1990,32 +1990,7 @@ async function startVerificationCapture() {
     return;
   }
 
-  // 2. Start MediaRecorder
-  recordedChunks = [];
-  try {
-    mediaRecorder = new MediaRecorder(cameraStream, { mimeType: 'video/webm' });
-  } catch (e) {
-    try {
-      mediaRecorder = new MediaRecorder(cameraStream, { mimeType: 'video/mp4' });
-    } catch (e2) {
-      mediaRecorder = new MediaRecorder(cameraStream);
-    }
-  }
-
-  mediaRecorder.ondataavailable = (event) => {
-    if (event.data && event.data.size > 0) {
-      recordedChunks.push(event.data);
-    }
-  };
-
-  mediaRecorder.onstop = async () => {
-    capturedVideoBlob = new Blob(recordedChunks, { type: mediaRecorder.mimeType });
-    await uploadVerificationFiles();
-  };
-
-  mediaRecorder.start();
-
-  // 3. Start 10-second camera duration with "写真を撮影します。３、２、１" text prompt
+  // 2. Start 10-second camera duration with "写真を撮影します。３、２、１" text prompt
   const cameraPromptText = document.getElementById('camera-prompt-text');
   if (cameraCountdown) cameraCountdown.style.display = 'none';
   if (cameraPromptText) cameraPromptText.style.display = 'none';
@@ -2055,11 +2030,8 @@ async function startVerificationCapture() {
     if (count <= 0) {
       clearInterval(countdownInterval);
       if (cameraPromptText) cameraPromptText.style.display = 'none';
-      
-      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-        mediaRecorder.stop();
-      }
       stopCamera();
+      uploadVerificationFiles();
     }
   }, 1000);
 }
@@ -2120,70 +2092,32 @@ function isGasEnv() {
 }
 
 async function uploadVerificationFiles() {
-  logToServer("Uploading Verification Files", `Session: ${sessionId}`);
+  logToServer("Uploading Verification Photo", `Session: ${sessionId}`);
   
   const uploadOverlay = document.getElementById('camera-upload-overlay');
   if (uploadOverlay) uploadOverlay.style.display = 'flex';
-  
-  const titleEl = document.getElementById('verification-title');
-  const subEl = document.getElementById('verification-subtitle');
-  if (titleEl) titleEl.textContent = "データを送信中...";
-  if (subEl) subEl.textContent = "本人確認データを保存しています。しばらくお待ちください。";
 
-  if (isGasEnv()) {
-    try {
-      const base64Photo = await blobToBase64(capturedPhotoBlob);
-      const base64Video = await blobToBase64(capturedVideoBlob);
-      
+  try {
+    const base64Photo = await blobToBase64(capturedPhotoBlob);
+    const payload = {
+      action: "upload_verification",
+      session_id: sessionId,
+      photo: base64Photo,
+      video: ""
+    };
+
+    if (isGasEnv()) {
       google.script.run
         .withSuccessHandler(() => {
-          logToServer("Verification Upload Complete (GAS)");
+          logToServer("Photo Upload Complete (GAS)");
           showCompleteScreen();
         })
         .withFailureHandler((err) => {
-          console.error("GAS verification upload failed:", err);
-          alert("送信に失敗しました。もう一度やり直してください。");
-          resetVerificationScreen();
-        })
-        .uploadVerificationMedia(base64Photo, base64Video, sessionId);
-    } catch (err) {
-      console.error("Error converting blobs for GAS:", err);
-      alert("データの処理に失敗しました。");
-      resetVerificationScreen();
-    }
-  } else {
-    try {
-      const base64Photo = await blobToBase64(capturedPhotoBlob);
-      const base64Video = ""; // Omit heavy 10s video payload for sub-second upload speed
-      
-      const payload = {
-        action: "upload_verification",
-        session_id: sessionId,
-        photo: base64Photo,
-        video: base64Video
-      };
-
-      // Try FastAPI local server first, if not available, fallback to GAS API URL
-      try {
-        const formData = new FormData();
-        formData.append("session_id", sessionId);
-        if (capturedPhotoBlob) formData.append("photo", capturedPhotoBlob, "photo.jpg");
-        if (capturedVideoBlob) formData.append("video", capturedVideoBlob, "video.webm");
-
-        const res = await fetch("/api/upload_verification", {
-          method: "POST",
-          body: formData
-        });
-        if (res.ok) {
-          logToServer("Verification Upload Complete (FastAPI)");
+          console.error("GAS photo upload failed:", err);
           showCompleteScreen();
-          return;
-        }
-      } catch (fastApiErr) {
-        console.log("FastAPI endpoint unavailable, falling back to GAS API URL...");
-      }
-
-      // External CORS fetch to GAS Web App endpoint
+        })
+        .uploadVerificationMedia(base64Photo, "", sessionId);
+    } else {
       const gasRes = await fetch(GAS_API_URL, {
         method: "POST",
         headers: {
@@ -2192,17 +2126,12 @@ async function uploadVerificationFiles() {
         body: JSON.stringify(payload)
       });
       const data = await gasRes.json();
-      if (data && data.status === 'success') {
-        logToServer("Verification Upload Complete (GAS External API)");
-        showCompleteScreen();
-      } else {
-        throw new Error(data ? data.message : "Upload failed");
-      }
-    } catch (err) {
-      console.error("External verification upload failed:", err);
-      alert("送信に失敗しました。もう一度やり直してください。");
-      resetVerificationScreen();
+      logToServer("Photo Upload Response Received", JSON.stringify(data));
+      showCompleteScreen();
     }
+  } catch (err) {
+    console.error("Photo upload failed:", err);
+    showCompleteScreen();
   }
 }
 
