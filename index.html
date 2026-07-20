@@ -1112,30 +1112,19 @@ body {
           </div>
         </div>
 
-        <div class="meet-container" id="verification-active-container" style="display: none; flex-direction: row; gap: 20px; align-items: stretch;">
+        <div class="meet-container" id="verification-active-container" style="display: none; flex-direction: column; width: 100%; align-items: center;">
           <!-- Webcam local stream preview -->
-          <div class="camera-preview-box" style="position: relative; flex: 1.2; min-height: 280px; border-radius: var(--radius-md); overflow: hidden; background: #000; display: flex; align-items: center; justify-content: center;">
-            <div class="camera-badge" id="camera-badge-text" style="position: absolute; top: 12px; left: 12px; background: rgba(0,0,0,0.6); color: #fff; padding: 4px 10px; font-size: 0.8rem; border-radius: var(--radius-sm); font-weight: 600; z-index: 5;">フロントカメラ</div>
+          <div class="camera-preview-box" style="position: relative; width: 100%; max-width: 520px; height: 420px; border-radius: var(--radius-md); overflow: hidden; background: #000; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-md);">
+            <div class="camera-badge" id="camera-badge-text" style="position: absolute; top: 14px; left: 14px; background: rgba(0,0,0,0.6); color: #fff; padding: 6px 12px; font-size: 0.85rem; border-radius: var(--radius-sm); font-weight: 600; z-index: 5;">フロントカメラ</div>
             <div class="camera-placeholder" id="camera-placeholder" style="color: #666; text-align: center;">
               <i class="fas fa-video-slash" style="font-size: 2.5rem; margin-bottom: 10px;"></i>
               <p id="camera-permission-text" style="font-size: 0.9rem;">カメラの起動を待っています...</p>
             </div>
-            <video id="camera-video" autoplay playsinline muted style="display: none; width: 100%; height: 100%; object-fit: cover;"></video>
+            <video id="camera-video" autoplay playsinline muted style="display: none; width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1);"></video>
             
             <!-- Countdown Overlay -->
-            <div id="camera-countdown" style="display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.65); align-items: center; justify-content: center; font-size: 6rem; color: #fff; font-weight: 800; z-index: 10; font-family: var(--font-display);">
+            <div id="camera-countdown" style="display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; font-size: 7rem; color: #fff; font-weight: 800; z-index: 10; font-family: var(--font-display);">
               5
-            </div>
-          </div>
-
-          <div class="meet-info-box" style="flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 10px;">
-            <div class="meet-instructions" id="verification-instructions-box" style="margin-bottom: 0; border-left: 4px solid var(--primary); padding-left: 16px;">
-              <h4 id="verif-step-title" style="font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">撮影手順:</h4>
-              <ul id="verif-step-list" style="list-style-type: none; font-size: 0.9rem; line-height: 1.6; color: var(--text-secondary);">
-                <li style="margin-bottom: 8px;"><i class="fas fa-check-circle" style="color: var(--primary); margin-right: 6px;"></i> カメラが起動したら、正面を向いてお待ちください。</li>
-                <li style="margin-bottom: 8px;"><i class="fas fa-check-circle" style="color: var(--primary); margin-right: 6px;"></i> 5秒間の動画が録画され、その間に写真が自動撮影されます。</li>
-                <li><i class="fas fa-check-circle" style="color: var(--primary); margin-right: 6px;"></i> 撮影が完了すると自動的にチェックイン完了画面に進みます。</li>
-              </ul>
             </div>
           </div>
         </div>
@@ -1904,7 +1893,7 @@ async function startVerificationCapture() {
   if (verificationInitContainer) verificationInitContainer.style.display = 'none';
   if (verificationActiveContainer) {
     verificationActiveContainer.style.display = 'flex';
-    verificationActiveContainer.style.flexDirection = 'row';
+    verificationActiveContainer.style.flexDirection = 'column';
   }
 
   // Play audio guidance prompt
