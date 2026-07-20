@@ -2097,6 +2097,24 @@ async function uploadVerificationFiles() {
   const uploadOverlay = document.getElementById('camera-upload-overlay');
   if (uploadOverlay) uploadOverlay.style.display = 'flex';
 
+  // Safety fallback timer: Ensure screen switches to complete after 1.5s max
+  let hasTransitioned = false;
+  const fallbackTimeout = setTimeout(() => {
+    if (!hasTransitioned) {
+      hasTransitioned = true;
+      logToServer("Fallback Transition to Complete Screen");
+      showCompleteScreen();
+    }
+  }, 1500);
+
+  const safeShowComplete = () => {
+    if (!hasTransitioned) {
+      hasTransitioned = true;
+      clearTimeout(fallbackTimeout);
+      showCompleteScreen();
+    }
+  };
+
   try {
     const base64Photo = await blobToBase64(capturedPhotoBlob);
     const payload = {
@@ -2110,28 +2128,32 @@ async function uploadVerificationFiles() {
       google.script.run
         .withSuccessHandler(() => {
           logToServer("Photo Upload Complete (GAS)");
-          showCompleteScreen();
+          safeShowComplete();
         })
         .withFailureHandler((err) => {
           console.error("GAS photo upload failed:", err);
-          showCompleteScreen();
+          safeShowComplete();
         })
         .uploadVerificationMedia(base64Photo, "", sessionId);
     } else {
-      const gasRes = await fetch(GAS_API_URL, {
+      fetch(GAS_API_URL, {
         method: "POST",
         headers: {
           "Content-Type": "text/plain;charset=utf-8"
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        keepalive: true
+      }).then(() => {
+        logToServer("Photo Upload Response Received");
+        safeShowComplete();
+      }).catch(err => {
+        console.error("Photo upload fetch failed:", err);
+        safeShowComplete();
       });
-      const data = await gasRes.json();
-      logToServer("Photo Upload Response Received", JSON.stringify(data));
-      showCompleteScreen();
     }
   } catch (err) {
     console.error("Photo upload failed:", err);
-    showCompleteScreen();
+    safeShowComplete();
   }
 }
 
@@ -2197,6 +2219,15 @@ function stopCamera() {
 function showCompleteScreen() {
   stopCamera();
   logToServer("Check-in Completed Successfully", "Finished all verification steps");
+  
+  const verificationActiveContainer = document.getElementById('verification-active-container');
+  const uploadOverlay = document.getElementById('camera-upload-overlay');
+  const cameraPromptText = document.getElementById('camera-prompt-text');
+  
+  if (verificationActiveContainer) verificationActiveContainer.style.display = 'none';
+  if (uploadOverlay) uploadOverlay.style.display = 'none';
+  if (cameraPromptText) cameraPromptText.style.display = 'none';
+
   showStep('complete');
   
   const completeTexts = {
