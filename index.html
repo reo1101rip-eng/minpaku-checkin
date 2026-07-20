@@ -1111,32 +1111,6 @@ body {
             </button>
           </div>
         </div>
-
-        <div class="meet-container" id="verification-active-container" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 999999; background: #000; overflow: hidden;">
-          <!-- Webcam local stream preview (Full Screen iPhone Camera Style) -->
-          <div class="camera-preview-box" style="position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; display: flex; align-items: center; justify-content: center;">
-            <div class="camera-badge" id="camera-badge-text" style="position: absolute; top: 24px; left: 24px; background: rgba(0,0,0,0.6); color: #fff; padding: 8px 16px; font-size: 0.95rem; border-radius: 20px; font-weight: 600; z-index: 1000000; backdrop-filter: blur(10px); display: flex; align-items: center; gap: 6px;">
-              <span style="display: inline-block; width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></span> フロントカメラ
-            </div>
-            <div class="camera-placeholder" id="camera-placeholder" style="color: #888; text-align: center; z-index: 1000000;">
-              <i class="fas fa-spinner fa-spin" style="font-size: 3rem; margin-bottom: 16px; color: var(--primary);"></i>
-              <p id="camera-permission-text" style="font-size: 1.1rem; color: #fff; font-weight: 600;">カメラを起動中...</p>
-            </div>
-            <video id="camera-video" autoplay playsinline muted style="display: none; width: 100vw; height: 100vh; object-fit: cover; transform: scaleX(-1);"></video>
-            
-            <!-- Countdown Overlay -->
-            <div id="camera-countdown" style="display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); align-items: center; justify-content: center; font-size: 9rem; color: #fff; font-weight: 800; z-index: 1000001; font-family: var(--font-display); text-shadow: 0 0 30px rgba(0,0,0,0.8);">
-              5
-            </div>
-
-            <!-- Uploading status overlay -->
-            <div id="camera-upload-overlay" style="display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.75); backdrop-filter: blur(12px); flex-direction: column; align-items: center; justify-content: center; z-index: 1000002; color: #fff;">
-              <i class="fas fa-cloud-upload-alt" style="font-size: 4rem; color: var(--primary); margin-bottom: 20px;"></i>
-              <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 8px;">データを送信中...</h3>
-              <p style="font-size: 1rem; color: rgba(255,255,255,0.8);">本人確認データを自動保存しています。しばらくお待ちください。</p>
-            </div>
-          </div>
-        </div>
       </div>
 
       <!-- STEP 5: Complete -->
@@ -1176,6 +1150,33 @@ body {
       <div>&copy; 2026 Osaka Minpaku Stay. Kiosk Terminal Mode.</div>
     </footer>
 
+  </div>
+
+  <!-- Full Screen Camera Active Overlay (Direct child of body to guarantee 100% viewport coverage) -->
+  <div class="meet-container" id="verification-active-container" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; z-index: 999999; background: #000; overflow: hidden; margin: 0; padding: 0;">
+    <!-- Webcam local stream preview (Full Screen iPhone Camera Style) -->
+    <div class="camera-preview-box" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; background: #000; display: flex; align-items: center; justify-content: center;">
+      <div class="camera-badge" id="camera-badge-text" style="position: absolute; top: 24px; left: 24px; background: rgba(0,0,0,0.6); color: #fff; padding: 8px 16px; font-size: 0.95rem; border-radius: 20px; font-weight: 600; z-index: 1000000; backdrop-filter: blur(10px); display: flex; align-items: center; gap: 6px;">
+        <span style="display: inline-block; width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></span> フロントカメラ
+      </div>
+      <div class="camera-placeholder" id="camera-placeholder" style="color: #888; text-align: center; z-index: 1000000;">
+        <i class="fas fa-spinner fa-spin" style="font-size: 3rem; margin-bottom: 16px; color: var(--primary);"></i>
+        <p id="camera-permission-text" style="font-size: 1.1rem; color: #fff; font-weight: 600;">カメラを起動中...</p>
+      </div>
+      <video id="camera-video" autoplay playsinline muted style="display: none; width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1);"></video>
+      
+      <!-- Countdown Overlay -->
+      <div id="camera-countdown" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); align-items: center; justify-content: center; font-size: 9rem; color: #fff; font-weight: 800; z-index: 1000001; font-family: var(--font-display); text-shadow: 0 0 30px rgba(0,0,0,0.8);">
+        5
+      </div>
+
+      <!-- Uploading status overlay -->
+      <div id="camera-upload-overlay" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); backdrop-filter: blur(12px); flex-direction: column; align-items: center; justify-content: center; z-index: 1000002; color: #fff;">
+        <i class="fas fa-cloud-upload-alt" style="font-size: 4rem; color: var(--primary); margin-bottom: 20px;"></i>
+        <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 8px;">データを送信中...</h3>
+        <p style="font-size: 1rem; color: rgba(255,255,255,0.8);">本人確認データを自動保存しています。しばらくお待ちください。</p>
+      </div>
+    </div>
   </div>
 
   <!-- Audio Elements -->
