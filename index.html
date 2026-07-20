@@ -1245,6 +1245,7 @@ let mediaRecorder = null;
 let recordedChunks = [];
 let capturedPhotoBlob = null;
 let capturedVideoBlob = null;
+let capturedBase64Photo = "";
 
 // DOM Elements
 const steps = {
@@ -2065,9 +2066,13 @@ function captureStillPhoto() {
   
   playShutterSound();
 
-  canvas.toBlob((blob) => {
-    capturedPhotoBlob = blob;
-  }, 'image/jpeg', 0.80);
+  try {
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.80);
+    capturedBase64Photo = dataUrl.split(',')[1] || "";
+  } catch (err) {
+    console.error("toDataURL failed:", err);
+    capturedBase64Photo = "";
+  }
 }
 
 function playShutterSound() {
@@ -2097,61 +2102,56 @@ async function uploadVerificationFiles() {
   const uploadOverlay = document.getElementById('camera-upload-overlay');
   if (uploadOverlay) uploadOverlay.style.display = 'flex';
 
-  // Safety fallback timer: Ensure screen switches to complete after 1.5s max
-  let hasTransitioned = false;
-  const fallbackTimeout = setTimeout(() => {
-    if (!hasTransitioned) {
-      hasTransitioned = true;
-      logToServer("Fallback Transition to Complete Screen");
-      showCompleteScreen();
-    }
-  }, 1500);
-
+  let isCompleteShown = false;
   const safeShowComplete = () => {
-    if (!hasTransitioned) {
-      hasTransitioned = true;
-      clearTimeout(fallbackTimeout);
+    if (!isCompleteShown) {
+      isCompleteShown = true;
       showCompleteScreen();
     }
   };
 
+  // 5-second hard safety fallback timer so guests are never stuck
+  const fallbackTimer = setTimeout(() => {
+    logToServer("Photo Upload Timeout Fallback Triggered");
+    safeShowComplete();
+  }, 5000);
+
   try {
-    const base64Photo = await blobToBase64(capturedPhotoBlob);
     const payload = {
       action: "upload_verification",
       session_id: sessionId,
-      photo: base64Photo,
+      photo: capturedBase64Photo,
       video: ""
     };
 
     if (isGasEnv()) {
       google.script.run
         .withSuccessHandler(() => {
+          clearTimeout(fallbackTimer);
           logToServer("Photo Upload Complete (GAS)");
           safeShowComplete();
         })
         .withFailureHandler((err) => {
+          clearTimeout(fallbackTimer);
           console.error("GAS photo upload failed:", err);
           safeShowComplete();
         })
-        .uploadVerificationMedia(base64Photo, "", sessionId);
+        .uploadVerificationMedia(capturedBase64Photo, "", sessionId);
     } else {
-      fetch(GAS_API_URL, {
+      const gasRes = await fetch(GAS_API_URL, {
         method: "POST",
         headers: {
           "Content-Type": "text/plain;charset=utf-8"
         },
-        body: JSON.stringify(payload),
-        keepalive: true
-      }).then(() => {
-        logToServer("Photo Upload Response Received");
-        safeShowComplete();
-      }).catch(err => {
-        console.error("Photo upload fetch failed:", err);
-        safeShowComplete();
+        body: JSON.stringify(payload)
       });
+      const data = await gasRes.json();
+      clearTimeout(fallbackTimer);
+      logToServer("Photo Upload Response Received", JSON.stringify(data));
+      safeShowComplete();
     }
   } catch (err) {
+    clearTimeout(fallbackTimer);
     console.error("Photo upload failed:", err);
     safeShowComplete();
   }
