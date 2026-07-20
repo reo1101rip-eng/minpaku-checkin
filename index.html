@@ -1148,13 +1148,19 @@ body {
             </div>
           </div>
 
-          <button class="finish-btn" id="finish-btn">
-            トップに戻る
-          </button>
-          
-          <div class="auto-reset-timer" id="auto-reset-timer">
-            60 秒後に自動的に初期画面に戻ります
+          <!-- Closing instruction banner -->
+          <div class="closing-notice-box" style="margin-top: 24px; padding: 20px 16px; background: rgba(37, 99, 235, 0.08); border-radius: var(--radius-md); text-align: center; border: 1px solid rgba(37, 99, 235, 0.2);">
+            <h3 id="complete-closing-heading" style="font-size: 1.35rem; font-weight: 800; color: var(--text-primary); margin-bottom: 8px; line-height: 1.4;">
+              チェックインは終了です。
+            </h3>
+            <p id="complete-closing-sub" style="font-size: 1.15rem; font-weight: 700; color: var(--primary); margin: 0; line-height: 1.4;">
+              このウェブブラウザを閉じてください。
+            </p>
           </div>
+
+          <button class="finish-btn" id="finish-btn" style="display: none;"></button>
+          
+          <div class="auto-reset-timer" id="auto-reset-timer" style="display: none;"></div>
         </div>
       </div>
 
@@ -2231,32 +2237,28 @@ function showCompleteScreen() {
   showStep('complete');
   
   const completeTexts = {
-    ja: { title: "チェックイン完了！", sub: "お手続きが完了しました。お部屋へお進みください。", welcome: "ウェルカム！", timer: "秒後に自動的に初期画面に戻ります" },
-    en: { title: "Check-in Complete!", sub: "Procedures completed. Please proceed to your room.", welcome: "Welcome!", timer: "seconds until automatically returning to the start screen" },
-    zh: { title: "办理入住完成！", sub: "手续已完成，请前往您的客房。", welcome: "欢迎光临！", timer: "秒后自动返回初始屏幕" },
-    ko: { title: "체크인 완료!", sub: "모든 절차가 완료되었습니다. 객실로 이동해 주십시오.", welcome: "환영합니다!", timer: "초 후 자동 시작 화면으로 이동합니다" }
+    ja: { title: "チェックイン完了！", sub: "お手続きが完了しました。お部屋へお進みください。", welcome: "ウェルカム！", closeHead: "チェックインは終了です。", closeSub: "このウェブブラウザを閉じてください。" },
+    en: { title: "Check-in Complete!", sub: "Procedures completed. Please proceed to your room.", welcome: "Welcome!", closeHead: "Check-in is complete.", closeSub: "Please close this web browser." },
+    zh: { title: "办理入住完成！", sub: "手续已完成，请前往您的客房。", welcome: "欢迎光临！", closeHead: "办理入住手续已结束。", closeSub: "请关闭此网页浏览器。" },
+    ko: { title: "체크인 완료!", sub: "모든 절차가 완료되었습니다. 객실로 이동해 주십시오.", welcome: "환영합니다!", closeHead: "체크인이 완료되었습니다.", closeSub: "이 웹 브라우저를 닫아주세요." }
   };
   const texts = completeTexts[selectedLang] || completeTexts.ja;
   document.querySelector('#step-complete .step-title').textContent = texts.title;
   document.querySelector('#step-complete .step-subtitle').textContent = texts.sub;
   document.getElementById('welcome-heading').textContent = texts.welcome;
-  finishBtn.textContent = selectedLang === 'ja' ? "トップに戻る" : "Return to Start";
+  
+  const closingHead = document.getElementById('complete-closing-heading');
+  const closingSub = document.getElementById('complete-closing-sub');
+  if (closingHead) closingHead.textContent = texts.closeHead;
+  if (closingSub) closingSub.textContent = texts.closeSub;
+
+  const finishBtn = document.getElementById('finish-btn');
+  const autoResetTimerText = document.getElementById('auto-reset-timer');
+  if (finishBtn) finishBtn.style.display = 'none';
+  if (autoResetTimerText) autoResetTimerText.style.display = 'none';
   
   document.getElementById('complete-room-number').textContent = "Room 302";
   document.getElementById('complete-lock-code').textContent = "9513#";
-  
-  let count = 60;
-  autoResetTimerText.textContent = `${count} ${texts.timer}`;
-  
-  clearInterval(callTimer);
-  callTimer = setInterval(() => {
-    count--;
-    if (count <= 0) {
-      resetToStart();
-    } else {
-      autoResetTimerText.textContent = `${count} ${texts.timer}`;
-    }
-  }, 1000);
 }
 
 function resetToStart() {
