@@ -1111,6 +1111,21 @@ body {
             </button>
           </div>
         </div>
+
+        <!-- Screen 2: Position Guidance (Shown before camera launches) -->
+        <div class="meet-container" id="verification-position-container" style="display: none; text-align: center; width: 100%; padding: 20px 10px;">
+          <div style="width: 80px; height: 80px; background: rgba(37, 99, 235, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; color: var(--primary); font-size: 2.2rem;">
+            <i class="fas fa-mobile-alt"></i>
+          </div>
+          
+          <h3 id="position-guidance-heading" style="font-size: 1.3rem; font-weight: 800; color: var(--text-primary); margin-bottom: 24px; line-height: 1.5; word-break: break-word;">
+            写真を撮影するのでスマートフォンを顔の高さに上げてください。
+          </h3>
+
+          <button class="start-btn" id="btn-ready-capture" style="max-width: 280px; margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 16px 32px; font-size: 1.2rem; font-weight: 700; border-radius: var(--radius-md); box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);">
+            <i class="fas fa-camera"></i> <span id="position-btn-text">撮影</span>
+          </button>
+        </div>
       </div>
 
       <!-- STEP 5: Complete -->
@@ -1293,7 +1308,12 @@ window.addEventListener('DOMContentLoaded', async () => {
   
   const btnStartVerification = document.getElementById('btn-start-verification');
   if (btnStartVerification) {
-    btnStartVerification.addEventListener('click', startVerificationCapture);
+    btnStartVerification.addEventListener('click', showPositionGuidance);
+  }
+
+  const btnReadyCapture = document.getElementById('btn-ready-capture');
+  if (btnReadyCapture) {
+    btnReadyCapture.addEventListener('click', startVerificationCapture);
   }
   
   finishBtn.addEventListener('click', resetToStart);
@@ -1892,15 +1912,43 @@ function proceedToVerification() {
   }
 }
 
-async function startVerificationCapture() {
-  const btnStartVerification = document.getElementById('btn-start-verification');
+function showPositionGuidance() {
   const verificationInitContainer = document.getElementById('verification-init-container');
+  const verificationPositionContainer = document.getElementById('verification-position-container');
+  
+  if (verificationInitContainer) verificationInitContainer.style.display = 'none';
+  if (verificationPositionContainer) verificationPositionContainer.style.display = 'block';
+  
+  const posHeadingLabels = {
+    ja: "写真を撮影するのでスマートフォンを顔の高さに上げてください。",
+    en: "Please raise your smartphone to face height for the photo.",
+    zh: "即将在拍摄照片，请将手机举至面部高度。",
+    ko: "사진을 촬영하므로 스마트폰을 얼굴 높이로 올려주세요."
+  };
+  const posBtnLabels = {
+    ja: "撮影",
+    en: "Take Photo",
+    zh: "拍摄",
+    ko: "촬영"
+  };
+  const posHeadingEl = document.getElementById('position-guidance-heading');
+  const posBtnTextEl = document.getElementById('position-btn-text');
+  if (posHeadingEl) posHeadingEl.textContent = posHeadingLabels[selectedLang] || posHeadingLabels.ja;
+  if (posBtnTextEl) posBtnTextEl.textContent = posBtnLabels[selectedLang] || posBtnLabels.ja;
+
+  logToServer("Position Guidance Shown", "User clicked initial verification button");
+}
+
+async function startVerificationCapture() {
+  const verificationInitContainer = document.getElementById('verification-init-container');
+  const verificationPositionContainer = document.getElementById('verification-position-container');
   const verificationActiveContainer = document.getElementById('verification-active-container');
   const cameraCountdown = document.getElementById('camera-countdown');
   const cameraVideo = document.getElementById('camera-video');
   const cameraPlaceholder = document.getElementById('camera-placeholder');
 
   if (verificationInitContainer) verificationInitContainer.style.display = 'none';
+  if (verificationPositionContainer) verificationPositionContainer.style.display = 'none';
   if (verificationActiveContainer) {
     verificationActiveContainer.style.display = 'flex';
     verificationActiveContainer.style.flexDirection = 'column';
@@ -2129,9 +2177,14 @@ function resetVerificationScreen() {
   if (subEl) subEl.textContent = "安全なご滞在のために法令で義務付けられています。ご自身の顔写真を撮影します。";
 
   const verificationInitContainer = document.getElementById('verification-init-container');
+  const verificationPositionContainer = document.getElementById('verification-position-container');
   const verificationActiveContainer = document.getElementById('verification-active-container');
+  const uploadOverlay = document.getElementById('camera-upload-overlay');
+
   if (verificationInitContainer) verificationInitContainer.style.display = 'block';
+  if (verificationPositionContainer) verificationPositionContainer.style.display = 'none';
   if (verificationActiveContainer) verificationActiveContainer.style.display = 'none';
+  if (uploadOverlay) uploadOverlay.style.display = 'none';
 }
 
 function blobToBase64(blob) {
