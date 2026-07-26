@@ -1421,10 +1421,10 @@ window.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // sessionStorage restoration check (Prevents guidance audio loop on reload)
-  const savedStep = sessionStorage.getItem('minpaku_step');
-  const savedSessionId = sessionStorage.getItem('minpaku_session_id');
-  const savedLang = sessionStorage.getItem('minpaku_lang') || 'ja';
+  // localStorage restoration check (Prevents guidance audio loop on reload)
+  const savedStep = localStorage.getItem('minpaku_step');
+  const savedSessionId = localStorage.getItem('minpaku_session_id');
+  const savedLang = localStorage.getItem('minpaku_lang') || 'ja';
   
   if (savedStep && savedSessionId) {
     sessionId = savedSessionId;
@@ -1442,6 +1442,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   const urlParams = new URLSearchParams(window.location.search);
   const stepParam = urlParams.get('step') || (window.GAS_QUERY_PARAMS && window.GAS_QUERY_PARAMS.step);
   const sessionParam = urlParams.get('session_id') || (window.GAS_QUERY_PARAMS && window.GAS_QUERY_PARAMS.session_id);
+  const langParam = urlParams.get('lang') || (window.GAS_QUERY_PARAMS && window.GAS_QUERY_PARAMS.lang);
   
   if (stepParam === 'verification') {
     if (sessionParam) {
@@ -1449,9 +1450,12 @@ window.addEventListener('DOMContentLoaded', async () => {
     } else {
       sessionId = generateSessionId();
     }
-    sessionStorage.setItem('minpaku_step', 'verification');
-    sessionStorage.setItem('minpaku_session_id', sessionId);
-    sessionStorage.setItem('minpaku_lang', selectedLang);
+    if (langParam) {
+      selectedLang = langParam;
+    }
+    localStorage.setItem('minpaku_step', 'verification');
+    localStorage.setItem('minpaku_session_id', sessionId);
+    localStorage.setItem('minpaku_lang', selectedLang);
     proceedToVerification();
   }
 });
@@ -1904,10 +1908,10 @@ function proceedToForm() {
     sessionId = generateSessionId();
   }
   
-  // Save progress state in sessionStorage
-  sessionStorage.setItem('minpaku_step', 'form');
-  sessionStorage.setItem('minpaku_session_id', sessionId);
-  sessionStorage.setItem('minpaku_lang', selectedLang);
+  // Save progress state in localStorage
+  localStorage.setItem('minpaku_step', 'form');
+  localStorage.setItem('minpaku_session_id', sessionId);
+  localStorage.setItem('minpaku_lang', selectedLang);
   
   showStep('form');
   logToServer("Google Form Screen Shown", "Iframe loading started with sessionId: " + sessionId);
@@ -1989,9 +1993,9 @@ function proceedToVerification() {
   if (!sessionId) {
     sessionId = generateSessionId();
   }
-  sessionStorage.setItem('minpaku_step', 'verification');
-  sessionStorage.setItem('minpaku_session_id', sessionId);
-  sessionStorage.setItem('minpaku_lang', selectedLang);
+  localStorage.setItem('minpaku_step', 'verification');
+  localStorage.setItem('minpaku_session_id', sessionId);
+  localStorage.setItem('minpaku_lang', selectedLang);
 
   logToServer("Google Form Form Completed", "User finished form submission");
   showStep('meet');
@@ -2361,9 +2365,9 @@ function stopCamera() {
 
 function showCompleteScreen() {
   stopCamera();
-  sessionStorage.removeItem('minpaku_step');
-  sessionStorage.removeItem('minpaku_session_id');
-  sessionStorage.removeItem('minpaku_lang');
+  localStorage.removeItem('minpaku_step');
+  localStorage.removeItem('minpaku_session_id');
+  localStorage.removeItem('minpaku_lang');
   
   logToServer("Check-in Completed Successfully", "Finished all verification steps");
   
@@ -2405,9 +2409,9 @@ function showCompleteScreen() {
 function resetToStart() {
   clearInterval(callTimer);
   stopCamera();
-  sessionStorage.removeItem('minpaku_step');
-  sessionStorage.removeItem('minpaku_session_id');
-  sessionStorage.removeItem('minpaku_lang');
+  localStorage.removeItem('minpaku_step');
+  localStorage.removeItem('minpaku_session_id');
+  localStorage.removeItem('minpaku_lang');
   sessionId = '';
   
   langButtons.forEach(b => b.classList.remove('selected'));
