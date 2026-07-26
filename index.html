@@ -1066,10 +1066,10 @@ body {
       </div>
 
       <!-- STEP 3: Google Form -->
-      <div class="kiosk-card" id="step-form" style="padding: 0; background: transparent; border: none; box-shadow: none; align-items: center; max-width: 760px;">
+      <div class="kiosk-card" id="step-form" style="padding: 24px 16px; background: #fff; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid var(--border); align-items: center; max-width: 500px; width: 100%; box-sizing: border-box; margin: 0 auto;">
         
         <!-- This container is hidden initially, and shown ONLY after Google Form submission -->
-        <div id="form-submitted-container" style="display: none; width: 100%; text-align: center; background: #fff; padding: 32px 24px; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid var(--border); margin-bottom: 20px;">
+        <div id="form-submitted-container" style="display: none; width: 100%; text-align: center; margin-bottom: 10px;">
           <i class="fas fa-check-circle" style="color: #10b981; font-size: 3.5rem; margin-bottom: 16px;"></i>
           <h3 style="font-size: 1.35rem; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">フォームの回答が送信されました</h3>
           <p style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.5;">
@@ -1080,26 +1080,50 @@ body {
           </button>
         </div>
 
-        <!-- ID notice box for guest backup -->
-        <div id="session-id-notice-box" style="width: 100%; padding: 12px 16px; background: #fffbeb; border: 1px solid #fef3c7; border-radius: var(--radius-md); font-size: 0.92rem; color: #b45309; text-align: center; margin-bottom: 12px; display: none; box-sizing: border-box;">
-          <i class="fas fa-exclamation-triangle" style="margin-right: 6px;"></i>
-          <span id="session-id-notice-text">GoogleフォームのID欄が消えてしまった場合は、以下を長押しコピーして貼り付けてください：</span>
-          <div id="session-id-copy-badge" style="font-size: 1.1rem; font-weight: 700; letter-spacing: 0.5px; user-select: all; -webkit-user-select: all; background: #fff; padding: 4px 12px; border-radius: 4px; border: 1px dashed #d97706; margin-top: 6px; display: inline-block; cursor: pointer; color: #b45309;">sess_xxxxx</div>
+        <!-- Dynamic Form Actions Container (Visible initially) -->
+        <div id="form-interactive-container" style="width: 100%; text-align: center; display: block;">
+          
+          <!-- ID notice box for guest backup -->
+          <div id="session-id-notice-box" style="width: 100%; padding: 12px 16px; background: #fffbeb; border: 1px solid #fef3c7; border-radius: var(--radius-md); font-size: 0.92rem; color: #b45309; text-align: center; margin-bottom: 20px; box-sizing: border-box; display: none;">
+            <i class="fas fa-exclamation-triangle" style="margin-right: 6px;"></i>
+            <span id="session-id-notice-text">GoogleフォームのID欄が消えてしまった場合は、以下を長押しコピーして貼り付けてください：</span>
+            <div id="session-id-copy-badge" style="font-size: 1.1rem; font-weight: 700; letter-spacing: 0.5px; user-select: all; -webkit-user-select: all; background: #fff; padding: 4px 12px; border-radius: 4px; border: 1px dashed #d97706; margin-top: 6px; display: inline-block; cursor: pointer; color: #b45309;">sess_xxxxx</div>
+          </div>
+
+          <h3 id="form-instruction-title" style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin-bottom: 12px; line-height: 1.4;">
+            宿泊者情報の入力を行います
+          </h3>
+          <p id="form-instruction-subtitle" style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.5; padding: 0 10px;">
+            下のボタンをタップして入力フォームを開き、宿泊者情報を入力してください。<br>入力完了後、この画面に戻って撮影に進みます。
+          </p>
+
+          <!-- BIG BLUE BUTTON to open form -->
+          <a id="form-open-btn" href="#" target="_blank" class="start-btn" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; max-width: 320px; padding: 16px 24px; font-size: 1.15rem; font-weight: 700; border-radius: var(--radius-md); text-decoration: none; color: #fff; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3); margin-bottom: 24px; box-sizing: border-box;">
+            <i class="fas fa-edit"></i> <span id="form-open-btn-text">入力フォームを開く</span>
+          </a>
+
+          <div style="border-top: 1px solid var(--border); padding-top: 20px; margin-top: 10px;">
+            <p id="form-complete-helper-text" style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px;">
+              ※別タブでのフォーム送信が完了したら、下のボタンを押してください。
+            </p>
+            <button class="start-btn" id="btn-proceed-to-camera" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; max-width: 320px; padding: 14px 20px; font-size: 1.05rem; font-weight: 700; border-radius: var(--radius-md); background: #10b981; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2); border: none; color: white;">
+              入力完了後に撮影へ進む <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+
         </div>
 
-        <!-- Google Form Iframe Container (visible initially, hidden after submission) -->
-        <div id="form-iframe-container" class="iframe-container" style="border: none; background: transparent; height: 720px; margin-bottom: 12px; border-radius: var(--radius-md); overflow: hidden; width: 100%;">
+        <!-- Google Form Iframe Container (Hidden to prevent blank white space) -->
+        <div id="form-iframe-container" class="iframe-container" style="border: none; background: transparent; height: 1px; width: 1px; opacity: 0; overflow: hidden;">
           <iframe id="form-iframe" class="form-iframe" src="" allow="camera; microphone"></iframe>
         </div>
         
-        <!-- Fallback Link (visible initially, hidden after submission) -->
-        <div id="form-fallback-container" style="text-align: center; font-size: 0.95rem; color: var(--text-secondary); margin-top: 12px; margin-bottom: 12px; width: 100%;">
-          フォームが正常に表示されない場合は、
-          <a id="form-fallback-link" href="#" target="_blank" style="color: var(--primary); font-weight: 600; text-decoration: underline;">ここをタップして直接入力画面を開いてください</a>
-          <div style="margin-top: 12px;">
-            <a href="#" id="form-next-fallback-link" style="color: var(--primary); font-size: 0.9rem; font-weight: 700; text-decoration: underline; display: none;">【別タブでの入力完了後】タップして撮影に進む <i class="fas fa-chevron-right"></i></a>
-          </div>
+        <!-- Fallback Link kept hidden -->
+        <div id="form-fallback-container" style="display: none;">
+          <a id="form-fallback-link" href="#" target="_blank"></a>
+          <a href="#" id="form-next-fallback-link"></a>
         </div>
+      </div>
       </div>
 
       <!-- STEP 4: Self-Camera Verification -->
@@ -1322,6 +1346,10 @@ window.addEventListener('DOMContentLoaded', async () => {
     btnCallConfirm.addEventListener('click', proceedToForm);
   }
   formNextBtn.addEventListener('click', proceedToVerification);
+  const btnProceedToCamera = document.getElementById('btn-proceed-to-camera');
+  if (btnProceedToCamera) {
+    btnProceedToCamera.addEventListener('click', proceedToVerification);
+  }
   
   const btnStartVerification = document.getElementById('btn-start-verification');
   if (btnStartVerification) {
