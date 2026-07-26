@@ -1080,6 +1080,13 @@ body {
           </button>
         </div>
 
+        <!-- ID notice box for guest backup -->
+        <div id="session-id-notice-box" style="width: 100%; padding: 12px 16px; background: #fffbeb; border: 1px solid #fef3c7; border-radius: var(--radius-md); font-size: 0.92rem; color: #b45309; text-align: center; margin-bottom: 12px; display: none; box-sizing: border-box;">
+          <i class="fas fa-exclamation-triangle" style="margin-right: 6px;"></i>
+          <span id="session-id-notice-text">GoogleフォームのID欄が消えてしまった場合は、以下を長押しコピーして貼り付けてください：</span>
+          <div id="session-id-copy-badge" style="font-size: 1.1rem; font-weight: 700; letter-spacing: 0.5px; user-select: all; -webkit-user-select: all; background: #fff; padding: 4px 12px; border-radius: 4px; border: 1px dashed #d97706; margin-top: 6px; display: inline-block; cursor: pointer; color: #b45309;">sess_xxxxx</div>
+        </div>
+
         <!-- Google Form Iframe Container (visible initially, hidden after submission) -->
         <div id="form-iframe-container" class="iframe-container" style="border: none; background: transparent; height: 720px; margin-bottom: 12px; border-radius: var(--radius-md); overflow: hidden; width: 100%;">
           <iframe id="form-iframe" class="form-iframe" src="" allow="camera; microphone"></iframe>
@@ -1226,7 +1233,7 @@ const AUDIO_DATA = {
 
 </script>
   <script>
-const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzHXLUbATgzhTNyYeaUv3vPX3wJv23mvZb3Kw7fo2TsKiCDdzycXypXtkRRkkDCfr8K4Q/exec";
+const GAS_API_URL = "https://script.google.com/macros/s/AKfycbx7nDTlumFPa6hZL9jMgB4VI0VR18CKz1NB9jGJI4E-784iDGoFY--XFdNvJKpDrdSXlA/exec";
 /* guest.js - Guest Kiosk App Logic */
 
 let appConfig = {
@@ -1385,6 +1392,23 @@ window.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  // sessionStorage restoration check (Prevents guidance audio loop on reload)
+  const savedStep = sessionStorage.getItem('minpaku_step');
+  const savedSessionId = sessionStorage.getItem('minpaku_session_id');
+  const savedLang = sessionStorage.getItem('minpaku_lang') || 'ja';
+  
+  if (savedStep && savedSessionId) {
+    sessionId = savedSessionId;
+    selectedLang = savedLang;
+    if (savedStep === 'form') {
+      proceedToForm();
+      return;
+    } else if (savedStep === 'verification') {
+      proceedToVerification();
+      return;
+    }
+  }
+
   // Handle direct navigation to camera step via URL parameters (e.g. redirect from Google Form confirmation)
   const urlParams = new URLSearchParams(window.location.search);
   const stepParam = urlParams.get('step') || (window.GAS_QUERY_PARAMS && window.GAS_QUERY_PARAMS.step);
@@ -1394,12 +1418,20 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (sessionParam) {
       sessionId = sessionParam;
     } else {
-      sessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      sessionId = generateSessionId();
     }
-    // Proceed straight to camera verification
+    sessionStorage.setItem('minpaku_step', 'verification');
+    sessionStorage.setItem('minpaku_session_id', sessionId);
+    sessionStorage.setItem('minpaku_lang', selectedLang);
     proceedToVerification();
   }
 });
+
+function generateSessionId() {
+  const timestamp = Date.now(); // 13 digits
+  const random = Math.floor(10000 + Math.random() * 90000); // 5 digits
+  return `sess_${timestamp}_${random}`;
+}
 
 // APIs
 async function fetchConfig() {
@@ -1495,7 +1527,7 @@ function getVoiceForLang(lang) {
 
 function startCheckin() {
   isCallFinished = false;
-  sessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+  sessionId = generateSessionId();
   if (btnCallConfirm) {
     btnCallConfirm.style.display = "none";
   }
@@ -1838,8 +1870,38 @@ function endVoiceCall(naturalEnd = false) {
 // Step 3: Google Form Input
 function proceedToForm() {
   formLoadCount = 0;
+  
+  if (!sessionId) {
+    sessionId = generateSessionId();
+  }
+  
+  // Save progress state in sessionStorage
+  sessionStorage.setItem('minpaku_step', 'form');
+  sessionStorage.setItem('minpaku_session_id', sessionId);
+  sessionStorage.setItem('minpaku_lang', selectedLang);
+  
   showStep('form');
-  logToServer("Google Form Screen Shown", "Iframe loading started");
+  logToServer("Google Form Screen Shown", "Iframe loading started with sessionId: " + sessionId);
+  
+  // Show backup ID notice box
+  const noticeBox = document.getElementById('session-id-notice-box');
+  const noticeText = document.getElementById('session-id-notice-text');
+  const copyBadge = document.getElementById('session-id-copy-badge');
+  
+  if (noticeBox) noticeBox.style.display = 'block';
+  if (copyBadge) {
+    copyBadge.textContent = sessionId;
+  }
+  
+  const noticeTexts = {
+    ja: "Googleフォーム最下部の「セッションID」が消えてしまった場合は、以下を長押しコピーして貼り付けてください：",
+    en: "If the 'Session ID' at the bottom of the Google Form is deleted, please copy and paste this ID:",
+    zh: "如果Google表单最下方的“Session ID”被删除，请复制并粘贴以下ID：",
+    ko: "Google 설문지 하단의 '세션 ID'가 삭제된 경우, 다음 ID를 복사하여 붙여넣으십시오:"
+  };
+  if (noticeText) {
+    noticeText.textContent = noticeTexts[selectedLang] || noticeTexts.ja;
+  }
   
   const formIframeContainer = document.getElementById('form-iframe-container');
   const formFallbackContainer = document.getElementById('form-fallback-container');
@@ -1850,12 +1912,24 @@ function proceedToForm() {
   if (formNextFallbackLink) formNextFallbackLink.style.display = "none";
   
   if (formIframe && appConfig) {
-    formIframe.src = appConfig.google_form_url;
+    const baseFormUrl = appConfig.google_form_url.split('?')[0];
+    const prefilledUrl = baseFormUrl + "?usp=pp_url&entry.1676060362=" + sessionId;
+    formIframe.src = prefilledUrl;
+    if (formFallbackLink) {
+      formFallbackLink.href = prefilledUrl;
+    }
   }
 }
 
 // Step 4: Self-Camera Verification (Face verification instead of Meet)
 function proceedToVerification() {
+  if (!sessionId) {
+    sessionId = generateSessionId();
+  }
+  sessionStorage.setItem('minpaku_step', 'verification');
+  sessionStorage.setItem('minpaku_session_id', sessionId);
+  sessionStorage.setItem('minpaku_lang', selectedLang);
+
   logToServer("Google Form Form Completed", "User finished form submission");
   showStep('meet');
   
@@ -2224,6 +2298,10 @@ function stopCamera() {
 
 function showCompleteScreen() {
   stopCamera();
+  sessionStorage.removeItem('minpaku_step');
+  sessionStorage.removeItem('minpaku_session_id');
+  sessionStorage.removeItem('minpaku_lang');
+  
   logToServer("Check-in Completed Successfully", "Finished all verification steps");
   
   const verificationActiveContainer = document.getElementById('verification-active-container');
@@ -2240,7 +2318,7 @@ function showCompleteScreen() {
     ja: { title: "チェックイン完了！", sub: "お手続きが完了しました。お部屋へお進みください。", welcome: "ウェルカム！", closeHead: "チェックインは終了です。", closeSub: "このウェブブラウザを閉じてください。" },
     en: { title: "Check-in Complete!", sub: "Procedures completed. Please proceed to your room.", welcome: "Welcome!", closeHead: "Check-in is complete.", closeSub: "Please close this web browser." },
     zh: { title: "办理入住完成！", sub: "手续已完成，请前往您的客房。", welcome: "欢迎光临！", closeHead: "办理入住手续已结束。", closeSub: "请关闭此网页浏览器。" },
-    ko: { title: "체크인 완료!", sub: "모든 절차가 완료되었습니다. 객실로 이동해 주십시오.", welcome: "환영합니다!", closeHead: "체크인이 완료되었습니다.", closeSub: "이 웹 브라우저를 닫아주세요." }
+    ko: { title: "체크인 완료!", sub: "모든 절차가 완료되었습니다. 객실로 이동해 주십시오.", welcome: "환영합니다!", closeHead: "체크인이 완료되었습니다.", closeSub: "이 웹 브라우저を 닫아주세요." }
   };
   const texts = completeTexts[selectedLang] || completeTexts.ja;
   document.querySelector('#step-complete .step-title').textContent = texts.title;
@@ -2264,6 +2342,11 @@ function showCompleteScreen() {
 function resetToStart() {
   clearInterval(callTimer);
   stopCamera();
+  sessionStorage.removeItem('minpaku_step');
+  sessionStorage.removeItem('minpaku_session_id');
+  sessionStorage.removeItem('minpaku_lang');
+  sessionId = '';
+  
   langButtons.forEach(b => b.classList.remove('selected'));
   startBtn.setAttribute('disabled', 'true');
   startBtn.textContent = "チェックインを開始する";
