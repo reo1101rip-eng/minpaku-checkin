@@ -1421,6 +1421,17 @@ window.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  const urlParams = new URLSearchParams(window.location.search);
+  const resetParam = urlParams.get('reset');
+  if (resetParam === 'true') {
+    localStorage.removeItem('minpaku_step');
+    localStorage.removeItem('minpaku_session_id');
+    localStorage.removeItem('minpaku_lang');
+    sessionId = '';
+    window.location.href = window.location.origin + window.location.pathname;
+    return;
+  }
+
   // localStorage restoration check (Prevents guidance audio loop on reload)
   const savedStep = localStorage.getItem('minpaku_step');
   const savedSessionId = localStorage.getItem('minpaku_session_id');
@@ -1439,7 +1450,6 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 
   // Handle direct navigation to camera step via URL parameters (e.g. redirect from Google Form confirmation)
-  const urlParams = new URLSearchParams(window.location.search);
   const stepParam = urlParams.get('step') || (window.GAS_QUERY_PARAMS && window.GAS_QUERY_PARAMS.step);
   const sessionParam = urlParams.get('session_id') || (window.GAS_QUERY_PARAMS && window.GAS_QUERY_PARAMS.session_id);
   const langParam = urlParams.get('lang') || (window.GAS_QUERY_PARAMS && window.GAS_QUERY_PARAMS.lang);
