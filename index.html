@@ -1112,33 +1112,88 @@ body {
 
       <!-- STEP 4: Self-Camera Verification -->
       <div class="kiosk-card" id="step-meet">
-        <h2 class="step-title" id="verification-title">本人確認（カメラ撮影）</h2>
-        <p class="step-subtitle" id="verification-subtitle">安全なご滞在のために法令で義務付けられています。ご自身の顔写真を撮影します。</p>
+        <h2 class="step-title" id="verification-title" style="text-align: center; margin-bottom: 8px;">
+          本人確認（カメラ撮影）<br>
+          <span style="font-size: 1.1rem; color: var(--text-secondary); display: block; margin-top: 4px; font-weight: 500;">
+            Identity Verification / 身份验证 / 본인 확인
+          </span>
+        </h2>
+        <p class="step-subtitle" id="verification-subtitle" style="text-align: center; line-height: 1.6; font-size: 0.95rem; margin-bottom: 24px; color: var(--text-secondary);">
+          安全なご滞在のために法令で義務付けられています。<br>
+          Required by law for a safe stay. / 为了安全入住，法律规定必须进行身份验证。 / 안전한 숙박을 위해 법적으로 의무화되어 있습니다.
+        </p>
         
         <!-- Hidden Native Camera Fallback Input for GAS Sandbox -->
         <input type="file" id="fallback-camera-input" accept="image/*" capture="user" style="display: none;">
         
-        <div class="meet-container" id="verification-init-container">
-          <!-- Big button shown BEFORE starting camera -->
-          <div style="text-align: center; width: 100%; margin: 30px 0;">
-            <button class="start-btn" id="btn-start-verification" style="max-width: 380px; margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 16px 24px; font-size: 1.1rem; border-radius: var(--radius-md);">
-              <i class="fas fa-camera"></i> <span id="verification-btn-text">本人確認のために写真を撮影します</span>
-            </button>
+        <!-- SCREEN 1: Phone Number Input Confirmation Screen (Visible first) -->
+        <div class="meet-container" id="verification-phone-container" style="text-align: center; width: 100%; padding: 10px 0;">
+          <div style="background: rgba(37, 99, 235, 0.05); border: 1px solid rgba(37, 99, 235, 0.15); border-radius: var(--radius-md); padding: 20px 16px; margin-bottom: 24px; text-align: left;">
+            <p style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; line-height: 1.4;">
+              🇯🇵 先ほどフォームに入力した電話番号を、確認のためもう一度入力してください。
+            </p>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.4;">
+              🇺🇸 Please enter the phone number you just entered in the form once more for confirmation.
+            </p>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.4;">
+              🇨🇳 为了确认，请再次输入您刚才在表单中填写的电话号码。
+            </p>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0; line-height: 1.4;">
+              🇰🇷 확인을 위해 방금 설문지에 입력하신 전화번호를 다시 한 번 입력해 주십시오.
+            </p>
           </div>
+
+          <div style="margin-bottom: 24px; width: 100%;">
+            <input type="tel" id="verification-phone-input" placeholder="例: 090-1234-5678" style="width: 100%; max-width: 360px; padding: 14px 16px; font-size: 1.15rem; border: 2px solid var(--surface-border); border-radius: var(--radius-md); text-align: center; background: rgba(255,255,255,0.05); color: var(--text-primary); box-sizing: border-box;">
+            <div id="phone-validation-error" style="display: none; color: #ef4444; font-size: 0.9rem; font-weight: 600; margin-top: 8px;">
+              電話番号を入力してください。 / Please enter your phone number.
+            </div>
+          </div>
+
+          <button class="start-btn" id="btn-submit-phone" style="max-width: 280px; margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 16px 24px; font-size: 1.15rem; border-radius: var(--radius-md); font-weight: 700; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);">
+            次へ / Next / 下一步 / 다음 <i class="fas fa-chevron-right"></i>
+          </button>
         </div>
 
-        <!-- Screen 2: Position Guidance (Shown before camera launches) -->
+        <!-- SCREEN 2: Auto Capture Explanation Screen (Hidden initially) -->
+        <div class="meet-container" id="verification-explain-container" style="display: none; text-align: center; width: 100%; padding: 10px 0;">
+          <div style="background: rgba(37, 99, 235, 0.05); border: 1px solid rgba(37, 99, 235, 0.15); border-radius: var(--radius-md); padding: 20px 16px; margin-bottom: 24px; text-align: left; line-height: 1.6;">
+            <p style="font-size: 0.95rem; color: var(--text-primary); margin-bottom: 12px; font-weight: 500;">
+              🇯🇵 これから自動撮影を開始します。カメラが起動して10秒後にカウントダウン（3、2、1）が始まり、自動で写真が撮影されます。
+            </p>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 12px;">
+              🇺🇸 Automatic capture will start now. The camera will launch and run for 10 seconds, then a countdown (3, 2, 1) will start, and the photo will be taken automatically.
+            </p>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 12px;">
+              🇨🇳 即将开始自动拍照。相机启动10秒后，将开始倒计时（3、2、1）并自动拍摄照片。
+            </p>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0;">
+              🇰🇷 지금부터 자동 촬영을 시작합니다. 카메라가 작동되고 10초 후에 카운트다운(3, 2, 1)이 시작되며 자동으로 사진이 촬영됩니다.
+            </p>
+          </div>
+
+          <button class="start-btn" id="btn-start-verification" style="max-width: 380px; margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 16px 24px; font-size: 1.15rem; border-radius: var(--radius-md); font-weight: 700; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);">
+            <i class="fas fa-camera"></i> <span id="verification-btn-text">撮影を開始する / Start Capture</span>
+          </button>
+        </div>
+
+        <!-- Screen 3: Position Guidance (Shown before camera launches) -->
         <div class="meet-container" id="verification-position-container" style="display: none; text-align: center; width: 100%; padding: 20px 10px;">
           <div style="width: 80px; height: 80px; background: rgba(37, 99, 235, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; color: var(--primary); font-size: 2.2rem;">
             <i class="fas fa-mobile-alt"></i>
           </div>
           
-          <h3 id="position-guidance-heading" style="font-size: 1.3rem; font-weight: 800; color: var(--text-primary); margin-bottom: 24px; line-height: 1.5; word-break: break-word;">
-            写真を撮影するのでスマートフォンを顔の高さに上げてください。
+          <h3 id="position-guidance-heading" style="font-size: 1.15rem; font-weight: 700; color: var(--text-primary); margin-bottom: 24px; line-height: 1.6; word-break: break-word; text-align: center;">
+            🇯🇵 スマートフォンを顔の高さに上げてください。<br>
+            <span style="font-size: 0.95rem; color: var(--text-secondary); display: block; margin-top: 8px; font-weight: 500;">
+              🇺🇸 Please raise your smartphone to eye level.<br>
+              🇨🇳 请将手机举至与脸部等高的位置。<br>
+              🇰🇷 스마트폰을 얼굴 높이까지 올려주십시오.
+            </span>
           </h3>
 
           <button class="start-btn" id="btn-ready-capture" style="max-width: 280px; margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 16px 32px; font-size: 1.2rem; font-weight: 700; border-radius: var(--radius-md); box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);">
-            <i class="fas fa-camera"></i> <span id="position-btn-text">撮影</span>
+            <i class="fas fa-camera"></i> <span id="position-btn-text">撮影 / Capture</span>
           </button>
         </div>
 
@@ -1254,10 +1309,10 @@ let appConfig = {
   google_meet_url: "https://meet.google.com/sbw-tkkj-ytt",
   phone_number: "050-1234-5678",
   guidance_text: {
-    ja: "こんにちは。こちらの民泊をご利用いただきありがとうございます。チェックインの前に、ゴミの処理と騒音に関する重要なお知らせがあります。まず、ゴミについてです。ゴミは燃えるゴミ、缶・ペットボトル、ビンに分別し、室内の指定されたゴミ箱に捨ててください。バルコニーや共用部分には放置しないでください。次に、騒音についてです。近隣住民の方々へのご配慮のため、夜間、特に午後10時から午前8時までの間は静かにお過ごしいただくようお願いします。室内での大声での会話や、テレビの音量には十分ご注意ください。ご協力ありがとうございます。それでは、お電話を切って次のチェックイン画面に進み、宿泊者情報の入力をお願いいたします。",
-    en: "Hello. Thank you for staying with us. Before you check in, here are important rules regarding garbage disposal and noise. First, regarding garbage: please separate your garbage into burnables, cans/plastic bottles, and glass bottles, and dispose of them in the designated trash bins inside the room. Do not leave garbage on the balcony or in common areas. Second, regarding noise: to show consideration to our neighbors, please keep noise to a minimum during the night, especially between 10 PM and 8 AM. Please avoid loud conversations and high TV volumes inside the room. Thank you for your cooperation. Please hang up the call to proceed to the next step and input your information.",
-    zh: "您好！非常感谢您入住我们的民宿。在办理入住之前，有关于垃圾处理和噪音的重要规定需要向您说明。第一，关于垃圾：请将垃圾分类为可燃垃圾、易拉罐/塑料瓶 and 玻璃瓶，并丢弃在室内指定的垃圾箱内。请勿将垃圾遗留在阳台或公共区域。第二，关于噪音：为了不打扰邻居，在夜间（特别是晚上10点至早上8点之间）请保持安静。请避免在室内大声交谈或将电视音量开得过大。非常感谢您的合作。请挂断电话，返回屏幕继续输入您的入住信息。",
-    ko: "안녕하세요! 저희 민박을 이용해 주셔서 감사합니다. 체크인에 앞서 쓰레기 배출 및 소음 관련 중요 수칙을 안내해 드립니다. 첫째, 쓰레기 배출 관련 안내입니다. 쓰레기는 타는 쓰레기, 캔 및 페트병, 유리병으로 분리하여 객실 내 지정된 쓰레기통에 버려주십시오. 발코니나 공용 공간에 방치하지 마시기 바랍니다. 둘째, 소음 관련 안내입니다. 이웃 주민분들을 배려하여 야간 시간대, 특히 오후 10시부터 오전 8시 사이에는 소음을 최소화해 주십시오. 객실 내에서 큰 소리로 대화하거나 TV 볼륨을 높이는 행동은 자제해 주시기 바랍니다. 협조해 주셔서 감사합니다. 통화를 종료하고 다음 단계로 이동하여 정보를 입력해 주십시오."
+    ja: "このたびは当施設をご利用いただき、ありがとうございます。チェックインのお手続きの前に、ごみと騒音についてご案内いたします。ごみは、「びん・缶・ペットボトル」と「それ以外」に分けて、室内の指定されたごみ箱へ捨ててください。ごみは、廊下や玄関前、道路など、室外には置かないようお願いいたします。また、ご宿泊の皆さまに気持ちよくお過ごしいただくため、午後9時以降は、大声での会話やテレビの音量にご配慮いただき、施設の出入口や周辺でも静かにお過ごしください。その他、洗濯機やエアコンなどの設備の使い方や、火災などの緊急時の対応方法は、お部屋のハウスルールをご確認ください。ご理解とご協力をお願いいたします。それでは、お電話を終了し、次のチェックイン手続きへお進みください。",
+    en: "Thank you for staying with us. Before you proceed with the check-in process, we would like to provide some information regarding garbage and noise rules. Please separate your garbage into 'bottles, cans, plastic bottles' and 'other waste', and dispose of them in the designated trash bins inside the room. Please do not place garbage outside the room, such as in the hallway, in front of the entrance, or on the street. Additionally, to ensure a comfortable stay for everyone, please be mindful of loud conversations and TV volume after 9:00 PM, and please keep quiet around the entrance and surrounding areas of the facility. For information on how to use facilities such as the washing machine and air conditioner, as well as emergency procedures in case of fire, please check the house rules in your room. Thank you for your understanding and cooperation. Now, please end the call and proceed to the next check-in step.",
+    zh: "感谢您入住本设施。在办理入住手续之前，我们向您说明关于垃圾和噪音的相关规定。请将垃圾分类为“玻璃瓶、易拉罐、塑料瓶”和“其他垃圾”，并丢弃在室内指定的垃圾箱内。请勿将垃圾放在走廊、玄关前或道路等室外区域。此外，为了让所有住客都能舒适度过，请在晚上9点以后注意控制说话声音和电视音量，并在设施出入口及周边保持安静。关于洗衣机、空调等设备的使用方法，以及发生火灾等紧急情况时的应对方法，请确认房间内的房屋守则。感谢您的理解与配合。那么，请挂断电话，继续进行下一步的入住手续。",
+    ko: "저희 시설을 이용해 주셔서 감사합니다. 체크인 절차를 진행하기 전에 쓰레기 배출 및 소음에 관해 안내해 드리겠습니다. 쓰레기는 '병·캔·페트병'과 '그 외 쓰레기'로 분류하여 객실 내 지정된 쓰레기통에 버려주십시오. 복도나 현관 앞, 도로 등 실외에는 쓰레기를 방치하지 않도록 부탁드립니다. 또한, 모든 투숙객분들이 편안하게 머무르실 수 있도록 오후 9시 이후에는 큰 소리로 대화하거나 TV 볼륨을 높이지 않도록 배려해 주시고, 시설 출입구 및 주변에서도 조용히 지내주시기 바랍니다. 그 밖에 세탁기, 에어컨 등 비품 사용법이나 화재 등 긴급 상황 시 대처 방법은 객실 내 하우스 룰을 확인해 주십시오. 이해와 협조를 부탁드립니다. 그럼 통화를 종료하시고 다음 체크인 절차를 진행해 주시기 바랍니다."
   }
 };
 let selectedLang = 'ja';
@@ -1272,6 +1327,7 @@ let recordedChunks = [];
 let capturedPhotoBlob = null;
 let capturedVideoBlob = null;
 let capturedBase64Photo = "";
+let inputPhoneNumber = "";
 
 // DOM Elements
 const steps = {
@@ -1357,6 +1413,29 @@ window.addEventListener('DOMContentLoaded', async () => {
     });
   }
   
+  const btnSubmitPhone = document.getElementById('btn-submit-phone');
+  if (btnSubmitPhone) {
+    btnSubmitPhone.addEventListener('click', () => {
+      const phoneInput = document.getElementById('verification-phone-input');
+      const phoneValError = document.getElementById('phone-validation-error');
+      if (phoneInput) {
+        const val = phoneInput.value.trim();
+        if (!val) {
+          if (phoneValError) phoneValError.style.display = 'block';
+          return;
+        }
+        if (phoneValError) phoneValError.style.display = 'none';
+        inputPhoneNumber = val;
+        
+        // Hide phone screen, show explanation screen
+        const phoneContainer = document.getElementById('verification-phone-container');
+        const explainContainer = document.getElementById('verification-explain-container');
+        if (phoneContainer) phoneContainer.style.display = 'none';
+        if (explainContainer) explainContainer.style.display = 'block';
+      }
+    });
+  }
+
   const btnStartVerification = document.getElementById('btn-start-verification');
   if (btnStartVerification) {
     btnStartVerification.addEventListener('click', showPositionGuidance);
@@ -1446,7 +1525,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     sessionId = savedSessionId;
     selectedLang = savedLang;
     if (savedStep === 'form') {
-      showIdRestoreScreen();
+      proceedToForm();
       return;
     } else if (savedStep === 'verification') {
       proceedToVerification();
@@ -1946,61 +2025,12 @@ function proceedToForm() {
   
   if (formIframe && appConfig) {
     const baseFormUrl = appConfig.google_form_url.split('?')[0];
-    const prefilledUrl = baseFormUrl + "?embedded=true&entry.1676060362=" + sessionId;
+    const prefilledUrl = baseFormUrl + "?embedded=true";
     formIframe.src = prefilledUrl;
     if (formFallbackLink) {
       formFallbackLink.href = prefilledUrl;
     }
   }
-}
-
-// Display the session ID restore screen when the guest navigates back or reloads
-function showIdRestoreScreen() {
-  showStep('form');
-  logToServer("Google Form Restore Screen Shown", "Displaying copyable ID notice box for sessionId: " + sessionId);
-  
-  const noticeBox = document.getElementById('session-id-notice-box');
-  const noticeText = document.getElementById('session-id-notice-text');
-  const copyBadge = document.getElementById('session-id-copy-badge');
-  const btnRestoreProceedForm = document.getElementById('btn-restore-proceed-form');
-  
-  if (noticeBox) noticeBox.style.display = 'block';
-  if (copyBadge) {
-    copyBadge.textContent = sessionId;
-  }
-  
-  const noticeTexts = {
-    ja: "Googleフォーム最下部の「セッションID」が消えてしまった場合は、以下を長押しコピーして貼り付けてください：",
-    en: "If the 'Session ID' at the bottom of the Google Form is deleted, please copy and paste this ID:",
-    zh: "如果Google表单最下方的“Session ID”被删除，请复制并粘贴以下ID：",
-    ko: "Google 설문지 하단의 '세션 ID'가 삭제된 경우, 다음 ID를 복사하여 붙여넣으십시오:"
-  };
-  if (noticeText) {
-    noticeText.textContent = noticeTexts[selectedLang] || noticeTexts.ja;
-  }
-  
-  const btnTexts = {
-    ja: "フォームに進む",
-    en: "Proceed to Form",
-    zh: "进入表单",
-    ko: "양식으로 이동"
-  };
-  if (btnRestoreProceedForm) {
-    btnRestoreProceedForm.textContent = btnTexts[selectedLang] || btnTexts.ja;
-  }
-  
-  // Show ID Restore Screen (warning box and blue button)
-  const idRestoreContainer = document.getElementById('id-restore-container');
-  if (idRestoreContainer) idRestoreContainer.style.display = "flex";
-  
-  // Hide Google Form iframe container initially
-  const formIframeContainer = document.getElementById('form-iframe-container');
-  const formFallbackContainer = document.getElementById('form-fallback-container');
-  const formSubmittedContainer = document.getElementById('form-submitted-container');
-  
-  if (formIframeContainer) formIframeContainer.style.display = "none";
-  if (formFallbackContainer) formFallbackContainer.style.display = "none";
-  if (formSubmittedContainer) formSubmittedContainer.style.display = "none";
 }
 
 // Step 4: Self-Camera Verification (Face verification instead of Meet)
@@ -2015,93 +2045,28 @@ function proceedToVerification() {
   logToServer("Google Form Form Completed", "User finished form submission");
   showStep('meet');
   
-  const verificationInitContainer = document.getElementById('verification-init-container');
+  const phoneContainer = document.getElementById('verification-phone-container');
+  const explainContainer = document.getElementById('verification-explain-container');
+  const positionContainer = document.getElementById('verification-position-container');
   const verificationActiveContainer = document.getElementById('verification-active-container');
-  if (verificationInitContainer) verificationInitContainer.style.display = 'block';
-  if (verificationActiveContainer) verificationActiveContainer.style.display = 'none';
-
-  const labels = {
-    ja: {
-      title: "本人確認（カメラ撮影）",
-      sub: "安全なご滞在のために法令で義務付けられています。ご自身の顔写真を撮影します。",
-      btn: "本人確認のために写真を撮影します",
-      stepTitle: "撮影手順:",
-      step1: "カメラが起動したら、正面を向いてお待ちください。",
-      step2: "5秒間の動画が録画され、その間に写真が自動撮影されます。",
-      step3: "撮影が完了すると自動的にチェックイン完了画面に進みます。"
-    },
-    en: {
-      title: "Identity Verification (Camera Capture)",
-      sub: "Required by Japanese law for a safe stay. We will take a photo of your face.",
-      btn: "Take photo for identity verification",
-      stepTitle: "Instructions:",
-      step1: "Please face the camera directly once it starts.",
-      step2: "A 5-second video will be recorded, and a photo is captured automatically.",
-      step3: "Once complete, you will proceed to the checkout/check-in confirmation."
-    },
-    zh: {
-      title: "身份验证 (相机拍摄)",
-      sub: "根据法律规定，为了您的安全入住，我们需要拍摄您的面部照片。",
-      btn: "拍摄本人身份验证照片",
-      stepTitle: "拍摄步骤:",
-      step1: "相机启动后，请正对相机等待。",
-      step2: "系统将进行5秒的录像，期间会自动拍摄一张照片。",
-      step3: "拍摄完成后，系统将自动跳转至入住完成页面。"
-    },
-    ko: {
-      title: "본인 확인 (카메라 촬영)",
-      sub: "안전한 숙박을 위해 법령에 따라 의무화되어 있습니다. 얼굴 사진을 촬영합니다.",
-      btn: "본인 확인을 위한 사진 촬영",
-      stepTitle: "촬영 절차:",
-      step1: "카메라가 켜지면 정면을 보고 대기해 주십시오.",
-      step2: "5초간 동영상이 녹화되며, 그 동안 사진이 자동 촬영됩니다.",
-      step3: "촬영이 끝나면 자동으로 체크인 완료 화면으로 이동합니다."
-    }
-  };
-
-  const l = labels[selectedLang] || labels.ja;
-  const titleEl = document.getElementById('verification-title');
-  const subEl = document.getElementById('verification-subtitle');
-  const btnText = document.getElementById('verification-btn-text');
-  const stepTitle = document.getElementById('verif-step-title');
+  const phoneInput = document.getElementById('verification-phone-input');
+  const phoneValError = document.getElementById('phone-validation-error');
   
-  if (titleEl) titleEl.textContent = l.title;
-  if (subEl) subEl.textContent = l.sub;
-  if (btnText) btnText.textContent = l.btn;
-  if (stepTitle) stepTitle.textContent = l.stepTitle;
-
-  const listItems = document.querySelectorAll('#verif-step-list li');
-  if (listItems.length >= 3) {
-    listItems[0].innerHTML = `<i class="fas fa-check-circle" style="color: var(--primary); margin-right: 6px;"></i> ${l.step1}`;
-    listItems[1].innerHTML = `<i class="fas fa-check-circle" style="color: var(--primary); margin-right: 6px;"></i> ${l.step2}`;
-    listItems[2].innerHTML = `<i class="fas fa-check-circle" style="color: var(--primary); margin-right: 6px;"></i> ${l.step3}`;
-  }
+  if (phoneContainer) phoneContainer.style.display = 'block';
+  if (explainContainer) explainContainer.style.display = 'none';
+  if (positionContainer) positionContainer.style.display = 'none';
+  if (verificationActiveContainer) verificationActiveContainer.style.display = 'none';
+  if (phoneInput) phoneInput.value = '';
+  if (phoneValError) phoneValError.style.display = 'none';
 }
 
 function showPositionGuidance() {
-  const verificationInitContainer = document.getElementById('verification-init-container');
+  const explainContainer = document.getElementById('verification-explain-container');
   const verificationPositionContainer = document.getElementById('verification-position-container');
   
-  if (verificationInitContainer) verificationInitContainer.style.display = 'none';
+  if (explainContainer) explainContainer.style.display = 'none';
   if (verificationPositionContainer) verificationPositionContainer.style.display = 'block';
   
-  const posHeadingLabels = {
-    ja: "写真を撮影するのでスマートフォンを顔の高さに上げてください。",
-    en: "Please raise your smartphone to face height for the photo.",
-    zh: "即将在拍摄照片，请将手机举至面部高度。",
-    ko: "사진을 촬영하므로 스마트폰을 얼굴 높이로 올려주세요."
-  };
-  const posBtnLabels = {
-    ja: "撮影",
-    en: "Take Photo",
-    zh: "拍摄",
-    ko: "촬영"
-  };
-  const posHeadingEl = document.getElementById('position-guidance-heading');
-  const posBtnTextEl = document.getElementById('position-btn-text');
-  if (posHeadingEl) posHeadingEl.textContent = posHeadingLabels[selectedLang] || posHeadingLabels.ja;
-  if (posBtnTextEl) posBtnTextEl.textContent = posBtnLabels[selectedLang] || posBtnLabels.ja;
-
   logToServer("Position Guidance Shown", "User clicked initial verification button");
 }
 
@@ -2118,17 +2083,6 @@ async function startVerificationCapture() {
   if (verificationActiveContainer) {
     verificationActiveContainer.style.display = 'flex';
     verificationActiveContainer.style.flexDirection = 'column';
-  }
-
-  // Play audio guidance prompt
-  const guidanceAudio = document.getElementById('guidance-audio');
-  if (guidanceAudio) {
-    const src = (typeof AUDIO_DATA !== 'undefined' && AUDIO_DATA[`camera_prompt_${selectedLang}`])
-                || (appConfig && appConfig.camera_prompt_urls && appConfig.camera_prompt_urls[selectedLang]) 
-                || `/static/audio/camera_prompt_${selectedLang}.mp3`;
-    guidanceAudio.src = src;
-    guidanceAudio.load();
-    guidanceAudio.play().catch(e => console.warn("Failed to play camera prompt audio:", e));
   }
 
   logToServer("Camera Verification Started", "User clicked start verification button");
@@ -2281,7 +2235,7 @@ async function uploadVerificationFiles() {
   try {
     const payload = {
       action: "upload_verification",
-      session_id: sessionId,
+      phone_number: inputPhoneNumber,
       photo: capturedBase64Photo,
       video: ""
     };
@@ -2298,7 +2252,7 @@ async function uploadVerificationFiles() {
           console.error("GAS photo upload failed:", err);
           safeShowComplete();
         })
-        .uploadVerificationMedia(capturedBase64Photo, "", sessionId);
+        .uploadVerificationMedia(capturedBase64Photo, "", inputPhoneNumber);
     } else {
       const gasRes = await fetch(GAS_API_URL, {
         method: "POST",
@@ -2320,18 +2274,15 @@ async function uploadVerificationFiles() {
 }
 
 function resetVerificationScreen() {
-  const titleEl = document.getElementById('verification-title');
-  const subEl = document.getElementById('verification-subtitle');
-  if (titleEl) titleEl.textContent = "本人確認（カメラ撮影）";
-  if (subEl) subEl.textContent = "安全なご滞在のために法令で義務付けられています。ご自身の顔写真を撮影します。";
-
-  const verificationInitContainer = document.getElementById('verification-init-container');
+  const phoneContainer = document.getElementById('verification-phone-container');
+  const explainContainer = document.getElementById('verification-explain-container');
   const verificationPositionContainer = document.getElementById('verification-position-container');
   const verificationActiveContainer = document.getElementById('verification-active-container');
   const uploadOverlay = document.getElementById('camera-upload-overlay');
   const cameraPromptText = document.getElementById('camera-prompt-text');
 
-  if (verificationInitContainer) verificationInitContainer.style.display = 'block';
+  if (phoneContainer) phoneContainer.style.display = 'block';
+  if (explainContainer) explainContainer.style.display = 'none';
   if (verificationPositionContainer) verificationPositionContainer.style.display = 'none';
   if (verificationActiveContainer) verificationActiveContainer.style.display = 'none';
   if (uploadOverlay) uploadOverlay.style.display = 'none';
