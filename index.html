@@ -1540,24 +1540,8 @@ window.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  // localStorage restoration check (Prevents guidance audio loop on reload)
-  const savedStep = localStorage.getItem('minpaku_step');
-  const savedSessionId = localStorage.getItem('minpaku_session_id');
-  const savedLang = localStorage.getItem('minpaku_lang') || 'ja';
-  
-  if (savedStep && savedSessionId) {
-    sessionId = savedSessionId;
-    selectedLang = savedLang;
-    if (savedStep === 'form') {
-      proceedToForm();
-      return;
-    } else if (savedStep === 'verification') {
-      proceedToVerification();
-      return;
-    }
-  }
-
   // Handle direct navigation to camera step via URL parameters (e.g. redirect from Google Form confirmation)
+  // This must be checked BEFORE localStorage restoration to allow direct transition links
   const stepParam = urlParams.get('step') || (window.GAS_QUERY_PARAMS && window.GAS_QUERY_PARAMS.step);
   const sessionParam = urlParams.get('session_id') || (window.GAS_QUERY_PARAMS && window.GAS_QUERY_PARAMS.session_id);
   const langParam = urlParams.get('lang') || (window.GAS_QUERY_PARAMS && window.GAS_QUERY_PARAMS.lang);
@@ -1575,6 +1559,24 @@ window.addEventListener('DOMContentLoaded', async () => {
     localStorage.setItem('minpaku_session_id', sessionId);
     localStorage.setItem('minpaku_lang', selectedLang);
     proceedToVerification();
+    return;
+  }
+
+  // localStorage restoration check (Prevents guidance audio loop on reload)
+  const savedStep = localStorage.getItem('minpaku_step');
+  const savedSessionId = localStorage.getItem('minpaku_session_id');
+  const savedLang = localStorage.getItem('minpaku_lang') || 'ja';
+  
+  if (savedStep && savedSessionId) {
+    sessionId = savedSessionId;
+    selectedLang = savedLang;
+    if (savedStep === 'form') {
+      proceedToForm();
+      return;
+    } else if (savedStep === 'verification') {
+      proceedToVerification();
+      return;
+    }
   }
 });
 
