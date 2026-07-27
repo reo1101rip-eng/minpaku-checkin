@@ -2259,6 +2259,15 @@ async function uploadVerificationFiles() {
   }, 5000);
 
   try {
+    // If we have a fallback blob, convert it to Base64 first
+    if (capturedPhotoBlob) {
+      try {
+        capturedBase64Photo = await blobToBase64(capturedPhotoBlob);
+      } catch (err) {
+        console.error("Failed to convert capturedPhotoBlob to Base64:", err);
+      }
+    }
+
     const payload = {
       action: "upload_verification",
       phone_number: inputPhoneNumber,
