@@ -2284,13 +2284,17 @@ async function uploadVerificationFiles() {
 
     if (isGasEnv()) {
       google.script.run
-        .withSuccessHandler(() => {
+        .withSuccessHandler((res) => {
           clearTimeout(fallbackTimer);
           logToServer("Photo Upload Complete (GAS)");
+          if (res && res.status === 'error') {
+            alert("【GASエラー】" + res.message);
+          }
           safeShowComplete();
         })
         .withFailureHandler((err) => {
           clearTimeout(fallbackTimer);
+          alert("【GAS実行エラー】" + err.toString());
           console.error("GAS photo upload failed:", err);
           safeShowComplete();
         })
@@ -2306,6 +2310,9 @@ async function uploadVerificationFiles() {
       const data = await gasRes.json();
       clearTimeout(fallbackTimer);
       logToServer("Photo Upload Response Received", JSON.stringify(data));
+      if (data && data.status === 'error') {
+        alert("【APIエラー】" + data.message);
+      }
       safeShowComplete();
     }
   } catch (err) {
