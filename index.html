@@ -2239,6 +2239,13 @@ function isGasEnv() {
 }
 
 async function uploadVerificationFiles() {
+  if (!capturedBase64Photo && !capturedPhotoBlob) {
+    alert("【本人確認エラー】写真が撮影されていないか、ファイルが選択されていません。カメラを許可して撮影するか、ファイルを選択してください。");
+    const uploadOverlay = document.getElementById('camera-upload-overlay');
+    if (uploadOverlay) uploadOverlay.style.display = 'none';
+    return;
+  }
+
   logToServer("Uploading Verification Photo", `Session: ${sessionId}`);
   
   const uploadOverlay = document.getElementById('camera-upload-overlay');
