@@ -1269,6 +1269,9 @@ let capturedPhotoBlob = null;
 let capturedVideoBlob = null;
 let capturedBase64Photo = "";
 let inputPhoneNumber = "";
+let activeSpeechUtterance = null;
+let speechStartedAt = 0;
+const JAPANESE_GUIDANCE_SPEECH = "当施設をご利用いただき、ありがとうございます。チェックイン前に、重要なルールをご説明します。ごみは、びん・缶・ペットボトルと、それ以外に分け、必ず室内のごみ箱へ捨ててください。廊下や玄関前など、室外には置かないでください。また、午後9時以降は、ご滞在中の皆様や近隣住民のかたが快適に過ごせるよう、話し声やテレビの音量等にご配慮ください。室内の設備の使い方や緊急時の対応は、お部屋のハウスルールをご確認ください。それでは、お電話を終了し、次の手続きへお進みください。";
 
 // DOM Elements
 const steps = {
@@ -1647,7 +1650,9 @@ function startVoiceGuidance() {
   showStep('call');
 
   const guideTexts = appConfig ? appConfig.guidance_text : {};
-  const textToSpeak = guideTexts[selectedLang] || "No message found.";
+  const textToSpeak = selectedLang === 'ja'
+    ? JAPANESE_GUIDANCE_SPEECH
+    : (guideTexts[selectedLang] || "No message found.");
   if (transcriptBox) {
     transcriptBox.textContent = textToSpeak;
   }
@@ -1742,6 +1747,26 @@ function makeVoiceCall() {
     lawDesc.textContent = currentLawNotice.desc;
   }
 
+  // Use the device's Japanese voice so 「近隣住民のかた」 is pronounced correctly.
+  if (selectedLang === 'ja' && 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window) {
+    window.speechSynthesis.cancel();
+    activeSpeechUtterance = new SpeechSynthesisUtterance(JAPANESE_GUIDANCE_SPEECH);
+    activeSpeechUtterance.lang = 'ja-JP';
+    activeSpeechUtterance.rate = 1.05;
+    activeSpeechUtterance.onend = () => {
+      activeSpeechUtterance = null;
+      showHangupButton();
+    };
+    activeSpeechUtterance.onerror = () => {
+      activeSpeechUtterance = null;
+      showHangupButton();
+    };
+    speechStartedAt = Date.now();
+    updateAudioTimer(53);
+    window.speechSynthesis.speak(activeSpeechUtterance);
+    return;
+  }
+
   // Play audio file
   const guidanceAudio = document.getElementById('guidance-audio');
   if (guidanceAudio) {
@@ -1806,9 +1831,11 @@ function updateAudioTimer(totalDuration) {
   clearInterval(callTimer);
   callTimer = setInterval(() => {
     const guidanceAudio = document.getElementById('guidance-audio');
-    if (guidanceAudio && !guidanceAudio.paused) {
+    if (activeSpeechUtterance || (guidanceAudio && !guidanceAudio.paused)) {
       const rate = 1.15;
-      const elapsed = guidanceAudio.currentTime / rate;
+      const elapsed = activeSpeechUtterance
+        ? (Date.now() - speechStartedAt) / 1000
+        : guidanceAudio.currentTime / rate;
       callDuration = Math.floor(elapsed);
       const remainingSec = Math.max(0, Math.ceil(totalDuration - elapsed));
       const heightPercent = Math.min(100, (elapsed / totalDuration) * 100);
@@ -1877,6 +1904,10 @@ function showHangupButton() {
 }
 
 function endVoiceCall(naturalEnd = false) {
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+  }
+  activeSpeechUtterance = null;
   const guidanceAudio = document.getElementById('guidance-audio');
   if (guidanceAudio) {
     guidanceAudio.pause();
