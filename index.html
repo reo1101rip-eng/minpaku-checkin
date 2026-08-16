@@ -4,10 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Smart Kiosk Check-in</title>
+  <script>
+    if (new URLSearchParams(window.location.search).get('step') === 'verification') {
+      document.documentElement.classList.add('direct-verification');
+    }
+  </script>
   <!-- FontAwesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- CSS -->
   <style>
+html.direct-verification body {
+  visibility: hidden;
+}
+
 /* variables.css - Premium Design System Tokens */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
@@ -1475,9 +1484,11 @@ window.addEventListener('DOMContentLoaded', async () => {
   if (typeof google !== 'undefined' && google.script && google.script.url) {
     google.script.url.getLocation(function(location) {
       processInitialRoute(location && location.parameter ? location.parameter : {});
+      requestAnimationFrame(() => document.documentElement.classList.remove('direct-verification'));
     });
   } else {
     processInitialRoute(window.GAS_QUERY_PARAMS || {});
+    requestAnimationFrame(() => document.documentElement.classList.remove('direct-verification'));
   }
 });
 
