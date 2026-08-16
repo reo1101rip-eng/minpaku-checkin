@@ -1459,19 +1459,11 @@ window.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    const savedStep = localStorage.getItem('minpaku_step');
-    const savedSessionId = localStorage.getItem('minpaku_session_id');
-    const savedLang = localStorage.getItem('minpaku_lang') || 'ja';
-
-    if (savedStep && savedSessionId) {
-      sessionId = savedSessionId;
-      selectedLang = savedLang;
-      if (savedStep === 'form') {
-        proceedToForm();
-      } else if (savedStep === 'verification') {
-        proceedToVerification();
-      }
-    }
+    // A normal visit must always start at language selection. Do not restore
+    // a previous verification screen from iPhone/Android local storage.
+    localStorage.removeItem('minpaku_step');
+    localStorage.removeItem('minpaku_session_id');
+    sessionId = '';
   }
 
   if (typeof google !== 'undefined' && google.script && google.script.url) {
