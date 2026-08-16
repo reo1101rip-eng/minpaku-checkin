@@ -1142,13 +1142,19 @@ body {
       <!-- STEP 5: Complete -->
       <div class="kiosk-card" id="step-complete">
         <div class="complete-kiosk">
+          <div class="success-icon-container" aria-hidden="true">
+            <i class="fas fa-check"></i>
+          </div>
           <h2 class="step-title">チェックイン完了！</h2>
           <p class="step-subtitle">お手続きが完了しました。ごゆっくりお過ごしください。</p>
+          <h3 style="font-size: 1.35rem; margin: 20px 0 6px; color: var(--text-primary);">Check-in Complete!</h3>
+          <p style="font-size: 1rem; color: var(--text-secondary); margin: 0;">The check-in process is complete. We hope you enjoy your stay.</p>
 
           <div class="closing-notice-box" style="margin-top: 24px; padding: 20px 16px; background: rgba(37, 99, 235, 0.08); border-radius: var(--radius-md); text-align: center; border: 1px solid rgba(37, 99, 235, 0.2);">
             <p id="complete-closing-sub" style="font-size: 1.15rem; font-weight: 700; color: var(--primary); margin: 0; line-height: 1.4;">
               このウェブブラウザを閉じてください。
             </p>
+            <p style="font-size: 1rem; font-weight: 600; color: var(--primary); margin: 8px 0 0; line-height: 1.4;">Please close this web browser.</p>
           </div>
         </div>
       </div>
@@ -2311,17 +2317,6 @@ function showCompleteScreen() {
 
   showStep('complete');
   
-  const completeTexts = {
-    ja: { title: "チェックイン完了！", sub: "お手続きが完了しました。ごゆっくりお過ごしください。", closeSub: "このウェブブラウザを閉じてください。" },
-    en: { title: "Check-in Complete!", sub: "The check-in process is complete. We hope you enjoy your stay.", closeSub: "Please close this web browser." },
-    zh: { title: "办理入住完成！", sub: "入住手续已完成。祝您入住愉快。", closeSub: "请关闭此网页浏览器。" },
-    ko: { title: "체크인 완료!", sub: "체크인 절차가 완료되었습니다. 편안한 시간 보내시기 바랍니다.", closeSub: "이 웹 브라우저를 닫아주세요." }
-  };
-  const texts = completeTexts[selectedLang] || completeTexts.ja;
-  document.querySelector('#step-complete .step-title').textContent = texts.title;
-  document.querySelector('#step-complete .step-subtitle').textContent = texts.sub;
-  const closingSub = document.getElementById('complete-closing-sub');
-  if (closingSub) closingSub.textContent = texts.closeSub;
 }
 
 function resetToStart() {
