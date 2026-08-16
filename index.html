@@ -1493,6 +1493,17 @@ function generateSessionId() {
 
 // APIs
 async function fetchConfig() {
+  // GitHub Pages uses the configuration embedded above. Avoid requesting the
+  // non-existent /api/config endpoint, which can behave differently by browser.
+  if (window.location.hostname.endsWith('github.io')) {
+    if (phoneNumDisplay) {
+      phoneNumDisplay.textContent = appConfig.phone_number || "050-1234-5678";
+    }
+    if (formFallbackLink) {
+      formFallbackLink.href = appConfig.google_form_url;
+    }
+    return;
+  }
   try {
     const res = await fetch('/api/config');
     appConfig = await res.json();
