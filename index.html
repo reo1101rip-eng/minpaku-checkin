@@ -1271,7 +1271,7 @@ let capturedBase64Photo = "";
 let inputPhoneNumber = "";
 let activeSpeechUtterance = null;
 let speechStartedAt = 0;
-const JAPANESE_GUIDANCE_SPEECH = "当施設をご利用いただき、ありがとうございます。チェックイン前に、重要なルールをご説明します。ごみは、びん・缶・ペットボトルと、それ以外に分け、必ず室内のごみ箱へ捨ててください。廊下や玄関前など、室外には置かないでください。また、午後9時以降は、ご滞在中の皆様や近隣住民のかたが快適に過ごせるよう、話し声やテレビの音量等にご配慮ください。室内の設備の使い方や緊急時の対応は、お部屋のハウスルールをご確認ください。それでは、お電話を終了し、次の手続きへお進みください。";
+const JAPANESE_GUIDANCE_SPEECH = "当施設をご利用いただき、ありがとうございます。チェックイン前に、重要なルールをご説明します。ごみは、びん・缶・ペットボトルと、それ以外に分け、必ず室内のごみ箱へ捨ててください。廊下や玄関前など、しつがいには置かないでください。また、午後9時以降は、ご滞在中の皆様や近隣住民のかたが快適に過ごせるよう、話し声やテレビの音量等にご配慮ください。室内の設備の使い方や緊急時の対応は、お部屋のハウスルールをご確認ください。それでは、お電話を終了し、次の手続きへお進みください。";
 
 // DOM Elements
 const steps = {
@@ -1651,7 +1651,7 @@ function startVoiceGuidance() {
 
   const guideTexts = appConfig ? appConfig.guidance_text : {};
   const textToSpeak = selectedLang === 'ja'
-    ? JAPANESE_GUIDANCE_SPEECH
+    ? JAPANESE_GUIDANCE_SPEECH.replace('しつがい', '室外')
     : (guideTexts[selectedLang] || "No message found.");
   if (transcriptBox) {
     transcriptBox.textContent = textToSpeak;
