@@ -1027,20 +1027,22 @@ body {
           </button>
         </div>
 
-        <!-- Google Form Iframe Container (visible initially, height: 720px) -->
-        <div id="form-iframe-container" class="iframe-container" style="border: none; background: transparent; height: 720px; margin-bottom: 12px; border-radius: var(--radius-md); overflow: hidden; width: 100%;">
+        <!-- Embedded form is disabled on smartphones to avoid third-party cookie issues. -->
+        <div id="form-iframe-container" class="iframe-container" style="display: none; border: none; background: transparent; height: 720px; margin-bottom: 12px; border-radius: var(--radius-md); overflow: hidden; width: 100%;">
           <iframe id="form-iframe" class="form-iframe" src="" allow="camera; microphone"></iframe>
         </div>
-
-        <button class="start-btn" id="form-next-fallback-link" style="display: flex; max-width: 380px; margin: 12px auto 20px; align-items: center; justify-content: center; gap: 8px;">
-          Googleフォームを送信しました<br>Form submitted <i class="fas fa-chevron-right"></i>
-        </button>
         
-        <!-- Fallback Link (visible initially, hidden after submission) -->
+        <!-- Open Google Form as a first-party page for reliable iPhone/Android input. -->
         <div id="form-fallback-container" style="text-align: center; font-size: 0.95rem; color: var(--text-secondary); margin-top: 12px; margin-bottom: 12px; width: 100%;">
-          フォームが正常に表示されない場合は、
-          <a id="form-fallback-link" href="#" target="_blank" style="color: var(--primary); font-weight: 600; text-decoration: underline;">ここをタップして直接入力画面を開いてください</a>
+          <p style="margin: 0 0 14px; line-height: 1.6;">下のボタンからGoogleフォームを開いて入力・送信してください。<br>Please open, complete, and submit the Google Form.</p>
+          <a id="form-fallback-link" href="#" target="_blank" rel="noopener" class="start-btn" style="display: inline-flex; max-width: 380px; margin: 0 auto 18px; align-items: center; justify-content: center; gap: 8px; text-decoration: none; box-sizing: border-box;">
+            Googleフォームを開く / Open Google Form <i class="fas fa-external-link-alt"></i>
+          </a>
         </div>
+
+        <button class="start-btn" id="form-next-fallback-link" style="display: flex; max-width: 420px; margin: 12px auto 20px; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, #28a745, #218838);">
+          フォーム送信後、本人確認へ進む<br>Continue after submitting <i class="fas fa-chevron-right"></i>
+        </button>
       </div>
 
       <!-- STEP 4: Self-Camera Verification -->
@@ -1988,17 +1990,17 @@ function proceedToForm() {
   const formFallbackContainer = document.getElementById('form-fallback-container');
   const formSubmittedContainer = document.getElementById('form-submitted-container');
   
-  if (formIframeContainer) formIframeContainer.style.display = "block";
+  if (formIframeContainer) formIframeContainer.style.display = "none";
   if (formFallbackContainer) formFallbackContainer.style.display = "block";
   if (formSubmittedContainer) formSubmittedContainer.style.display = "none";
   if (formNextFallbackLink) formNextFallbackLink.style.display = "flex";
   
   if (formIframe && appConfig) {
     const baseFormUrl = appConfig.google_form_url.split('?')[0];
-    const prefilledUrl = baseFormUrl + "?embedded=true";
-    formIframe.src = prefilledUrl;
+    const directFormUrl = baseFormUrl + "?usp=sf_link&checkin=" + encodeURIComponent(sessionId);
+    formIframe.src = "";
     if (formFallbackLink) {
-      formFallbackLink.href = prefilledUrl;
+      formFallbackLink.href = directFormUrl;
     }
   }
 }
