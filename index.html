@@ -1040,9 +1040,6 @@ body {
           </a>
         </div>
 
-        <button class="start-btn" id="form-next-fallback-link" style="display: flex; max-width: 420px; margin: 12px auto 20px; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, #28a745, #218838);">
-          フォーム送信後、本人確認へ進む<br>Continue after submitting <i class="fas fa-chevron-right"></i>
-        </button>
       </div>
 
       <!-- STEP 4: Self-Camera Verification -->
@@ -1304,7 +1301,6 @@ const lawDesc = document.getElementById('law-desc');
 const formIframe = document.getElementById('form-iframe');
 const formFallbackLink = document.getElementById('form-fallback-link');
 const formNextBtn = document.getElementById('form-next-btn');
-const formNextFallbackLink = document.getElementById('form-next-fallback-link');
 const cameraVideo = document.getElementById('camera-video');
 const cameraPlaceholder = document.getElementById('camera-placeholder');
 
@@ -1402,21 +1398,6 @@ window.addEventListener('DOMContentLoaded', async () => {
       } else {
         resetVerificationScreen();
       }
-    });
-  }
-
-  // Fallback link click triggers the backup manual next button visibility
-  if (formFallbackLink) {
-    formFallbackLink.addEventListener('click', () => {
-      if (formNextFallbackLink) {
-        formNextFallbackLink.style.display = "inline-block";
-      }
-    });
-  }
-  if (formNextFallbackLink) {
-    formNextFallbackLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      proceedToVerification();
     });
   }
 
@@ -1993,7 +1974,6 @@ function proceedToForm() {
   if (formIframeContainer) formIframeContainer.style.display = "none";
   if (formFallbackContainer) formFallbackContainer.style.display = "block";
   if (formSubmittedContainer) formSubmittedContainer.style.display = "none";
-  if (formNextFallbackLink) formNextFallbackLink.style.display = "flex";
   
   if (formIframe && appConfig) {
     const baseFormUrl = appConfig.google_form_url.split('?')[0];
