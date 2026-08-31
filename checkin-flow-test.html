@@ -14,7 +14,12 @@
   </style>
 </head>
 <body>
-  <div class="card" id="choice">
+  <div class="card" id="audio">
+    <h1>自動音声案内<br><small>Audio Guidance</small></h1>
+    <p class="note">重要事項の音声案内を確認してください。<br>Please listen to the audio guidance.</p>
+    <button onclick="show('choice')">音声案内を確認しました<br>Guidance completed</button>
+  </div>
+  <div class="card hidden" id="choice">
     <h1>チェックインの登録方法<br><small>Choose a registration method</small></h1>
     <p class="note">宿泊者全員が揃ってから開始してください。<br>Please begin only after all guests are present.</p>
     <a class="action" href="https://docs.google.com/forms/d/1GIH4qdsbaLq2-2w3FRfyj52nj92n0l4PZQQsMWeB8VM/viewform" target="_self">Googleフォームで登録<br>Register with Google Form</a>
