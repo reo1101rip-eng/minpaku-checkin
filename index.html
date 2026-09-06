@@ -1041,6 +1041,9 @@ body {
           <a id="email-fallback-link" href="https://mail-to.link/m9/3ts6jcv" target="_blank" rel="noopener" class="start-btn" style="display: inline-flex; max-width: 380px; margin: 0 auto 18px; align-items: center; justify-content: center; gap: 8px; text-decoration: none; box-sizing: border-box; background: #208b50;">
             メールで登録 / Register by Email <i class="fas fa-envelope"></i>
           </a>
+          <button id="email-sent-next-btn" class="start-btn" type="button" style="display: none; max-width: 380px; margin: 0 auto 18px; background: #208b50;">
+            メール送信済み → 本人確認へ / Email sent → Identity verification
+          </button>
         </div>
 
       </div>
@@ -1431,6 +1434,16 @@ window.addEventListener('DOMContentLoaded', async () => {
         document.body.scrollTop = 0;
       }, 150);
 
+    });
+  }
+  const emailSentNextBtn = document.getElementById('email-sent-next-btn');
+  const emailFallbackLink = document.getElementById('email-fallback-link');
+  if (emailFallbackLink && emailSentNextBtn) {
+    emailFallbackLink.addEventListener('click', () => {
+      emailSentNextBtn.style.display = 'inline-flex';
+    });
+    emailSentNextBtn.addEventListener('click', () => {
+      proceedToVerification();
     });
   }
 
