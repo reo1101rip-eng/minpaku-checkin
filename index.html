@@ -1451,8 +1451,11 @@ window.addEventListener('DOMContentLoaded', async () => {
         '出発日 / Departure Date：',
         '電話番号 / Phone Number：',
         '',
-        '宿泊者全員の写真を添付してください。',
-        'Please attach photos of all guests.'
+        '宿泊者全員の写真と、海外のお客様はパスポート画像を添付してください。',
+        'Please attach photos of all guests. Overseas guests must also attach passport images.',
+        '',
+        'メール送信後、自動返信メールに記載されたURLへアクセスし、本人確認を完了してください。',
+        'After sending the email, open the URL in the automatic reply and complete identity verification.'
       ].join('\n');
       emailFallbackLink.href = 'mailto:liaisoncheckin2@gmail.com?subject=Check-in%20Information&body=' + encodeURIComponent(body);
     });
