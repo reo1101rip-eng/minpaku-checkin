@@ -1783,35 +1783,13 @@ function makeVoiceCall() {
     lawDesc.textContent = currentLawNotice.desc;
   }
 
-  // Use the device's Japanese voice so 「近隣住民のかた」 is pronounced correctly.
-  if (selectedLang === 'ja' && 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window) {
-    window.speechSynthesis.cancel();
-    activeSpeechUtterance = new SpeechSynthesisUtterance(JAPANESE_GUIDANCE_SPEECH);
-    activeSpeechUtterance.lang = 'ja-JP';
-    activeSpeechUtterance.rate = 1.05;
-    activeSpeechUtterance.voice = getVoiceForLang('ja');
-    activeSpeechUtterance.onend = () => {
-      activeSpeechUtterance = null;
-      showHangupButton();
-    };
-    activeSpeechUtterance.onerror = () => {
-      activeSpeechUtterance = null;
-      showHangupButton();
-    };
-    speechStartedAt = Date.now();
-    updateAudioTimer(53);
-    window.speechSynthesis.speak(activeSpeechUtterance);
-    return;
+  // 端末ごとに再生時間が変わる音声合成は使わず、固定長の音声ファイルを再生する。
+  // カウントダウンは音声ファイルの実際の再生位置を基準にする。
+  if (typeof speechSynthesis !== 'undefined') {
+    speechSynthesis.cancel();
   }
 
-  // Never fall back to the old Japanese MP3, which mispronounces 「室外」.
-  if (selectedLang === 'ja') {
-    alert('このブラウザでは日本語音声を再生できません。ChromeまたはSafariで開いてください。');
-    showHangupButton();
-    return;
-  }
-
-  // Play audio file
+  // Play fixed audio file
   const guidanceAudio = document.getElementById('guidance-audio');
   if (guidanceAudio) {
     const src = (typeof AUDIO_DATA !== 'undefined' && AUDIO_DATA[`guidance_${selectedLang}`])
