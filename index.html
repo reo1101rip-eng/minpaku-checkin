@@ -1789,6 +1789,25 @@ function makeVoiceCall() {
     speechSynthesis.cancel();
   }
 
+  // 日本語はブラウザの音声合成で読み上げる。
+  if (selectedLang === 'ja' && 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window) {
+    activeSpeechUtterance = new SpeechSynthesisUtterance(JAPANESE_GUIDANCE_SPEECH);
+    activeSpeechUtterance.lang = 'ja-JP';
+    activeSpeechUtterance.rate = 1.15;
+    activeSpeechUtterance.voice = getVoiceForLang('ja');
+    activeSpeechUtterance.onend = () => {
+      activeSpeechUtterance = null;
+      showHangupButton();
+    };
+    activeSpeechUtterance.onerror = () => {
+      activeSpeechUtterance = null;
+      showHangupButton();
+    };
+    speechStartedAt = Date.now();
+    updateAudioTimer(53);
+    window.speechSynthesis.speak(activeSpeechUtterance);
+    return;
+  }
   // Play fixed audio file
   const guidanceAudio = document.getElementById('guidance-audio');
   if (guidanceAudio) {
