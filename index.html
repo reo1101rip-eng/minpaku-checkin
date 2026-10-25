@@ -1793,7 +1793,7 @@ function makeVoiceCall() {
   if (selectedLang === 'ja' && 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window) {
     activeSpeechUtterance = new SpeechSynthesisUtterance(JAPANESE_GUIDANCE_SPEECH);
     activeSpeechUtterance.lang = 'ja-JP';
-    activeSpeechUtterance.rate = 1.0;
+    activeSpeechUtterance.rate = 0.9;
     activeSpeechUtterance.voice = getVoiceForLang('ja');
     activeSpeechUtterance.onend = () => {
       activeSpeechUtterance = null;
