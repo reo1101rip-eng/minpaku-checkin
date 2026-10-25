@@ -1877,7 +1877,7 @@ function updateAudioTimer(totalDuration) {
         ? (Date.now() - speechStartedAt) / 1000
         : guidanceAudio.currentTime;
       callDuration = Math.floor(elapsed);
-      const remainingSec = Math.max(0, Math.ceil(totalDuration - elapsed));
+      const remainingSec = Math.max(1, Math.ceil(totalDuration - elapsed));
       const heightPercent = Math.min(100, (elapsed / totalDuration) * 100);
       
       if (waterFill) {
