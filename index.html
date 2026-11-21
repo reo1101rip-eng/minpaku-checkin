@@ -1262,60 +1262,6 @@ Now, please end the call and proceed to the next check-in step.`,
 그럼 통화를 종료하시고 다음 체크인 절차를 진행해 주시기 바랍니다.`
   }
 };
-/**
- * 施設コード → GoogleフォームURL 対応表（全38施設）
- * 使い方: ページURLに ?f=KS のように施設コードを付けると、その施設のフォームが開く。
- * 指定がない/不明な場合は LN（現在の運用）をデフォルトにする。
- */
-const FACILITY_FORM_URLS = {
-  "BS": "https://docs.google.com/forms/d/e/1FAIpQLSe9Tj9rcbynGevQxRGeDpg3quk7jLkORevUO_u5BKP751yOQA/viewform?embedded=true",
-  "CN": "https://docs.google.com/forms/d/e/1FAIpQLSdCQWpDlswf1KYW1SAnz3IlVSROwZpf7-asSQekFkQHdk0jYA/viewform?embedded=true",
-  "CS1": "https://docs.google.com/forms/d/e/1FAIpQLSefzKHA-ow2kTUnEmXkAGQf-TqDTE_KZsyKTdnQZCB9rxX3Sg/viewform?embedded=true",
-  "CS10": "https://docs.google.com/forms/d/e/1FAIpQLSfSWRQj8ypo_EZmRYGBNAARZ4qGqn1ziDkYREag0J_Rv2YltA/viewform?embedded=true",
-  "CS11": "https://docs.google.com/forms/d/e/1FAIpQLScL24Zo2ft7iwLrgsBSkzRocnzKir37FebD-gj4sVdxv7XueQ/viewform?embedded=true",
-  "CS12": "https://docs.google.com/forms/d/e/1FAIpQLSfftXEFLqlIPJHVMsqxmi_e2NebqAIFgS3ARRdlHGxDxwT4SQ/viewform?embedded=true",
-  "CS17": "https://docs.google.com/forms/d/e/1FAIpQLSdWYJB3HbjcYlWBHFL7HT7c7vwe4UT4otPR0qMURwrFn5XFPA/viewform?embedded=true",
-  "CS18": "https://docs.google.com/forms/d/e/1FAIpQLSc50b9uMyCPC4S6Wgluu3ouAqVQCydPm5Aj0SNcLg3oBQKRRg/viewform?embedded=true",
-  "CS19": "https://docs.google.com/forms/d/e/1FAIpQLSfvnt1bXQbyqlbotntkcH7f3LqA73dHzrqdoTRBZV5Q7W14tg/viewform?embedded=true",
-  "CS2": "https://docs.google.com/forms/d/e/1FAIpQLScn6v3ABH-byqPYwaZ5kl0nJv2u19kBo4w04ql14yscAOYgog/viewform?embedded=true",
-  "CS21": "https://docs.google.com/forms/d/e/1FAIpQLSc_eVVvWiHC26Ykvw3jxfSeNCw9BlYw-4r-d4Cm23Y38gxqjQ/viewform?embedded=true",
-  "CS22": "https://docs.google.com/forms/d/e/1FAIpQLSfUYzfiSgAQiX2LYcrPX6b-YDaE21-oKvqMS95TH3V92fIOAQ/viewform?embedded=true",
-  "CS23": "https://docs.google.com/forms/d/e/1FAIpQLScs9vJv_dGnauAGQOQ7Sd4aQcDuniXbqqV_83wubfB46fkvaw/viewform?embedded=true",
-  "CS25": "https://docs.google.com/forms/d/e/1FAIpQLSfKqEiqThbvsjT0TjVmBlmXib3cEzaDzMB5jKPEvLDchpQtbQ/viewform?embedded=true",
-  "CS3": "https://docs.google.com/forms/d/e/1FAIpQLSdZrsMZGA8PyAhSjMTkwJpkDMnoV-DCv4BhBgjTc9InPVR3dA/viewform?embedded=true",
-  "CS4": "https://docs.google.com/forms/d/e/1FAIpQLSfEBtgzDUAMS6mTFEdXcSmiv0vRfCgjE8J9kVqHIqOJ3-SpWA/viewform?embedded=true",
-  "CS5": "https://docs.google.com/forms/d/e/1FAIpQLSfcH0XwASzaMhl6hFgU72Q30254qMtldV5a0QY3oJFmT0t2aw/viewform?embedded=true",
-  "CS6": "https://docs.google.com/forms/d/e/1FAIpQLSdzIB-nGswOzSkH0muQovLZ36CacSbjuILN8qrcZvWLtDiryQ/viewform?embedded=true",
-  "CS7": "https://docs.google.com/forms/d/e/1FAIpQLSeCOwlenC1wmqginXqI2_ZOFv866XbFQciMBsvce6W8jUbHJQ/viewform?embedded=true",
-  "CS8": "https://docs.google.com/forms/d/e/1FAIpQLScwzBS_CgXKsMnHeduhYLKwBNCAY8Y1gOUSjur636uls2dG0w/viewform?embedded=true",
-  "CS9": "https://docs.google.com/forms/d/e/1FAIpQLSeOGT21YcYKCs8aS0cDajBZju3ECUdgWo47eTd-Pu85xulAlA/viewform?embedded=true",
-  "KB": "https://docs.google.com/forms/d/e/1FAIpQLSfDD6Mq0rapTHyzQgLV_yz9TobXqket8CofvwcERlD0FX6h5A/viewform?embedded=true",
-  "KIC": "https://docs.google.com/forms/d/e/1FAIpQLSdQGYcuSRjszErjh86yWul5uE9PbX5LfCNeD5O7RtnpvjanxA/viewform?embedded=true",
-  "KS": "https://docs.google.com/forms/d/e/1FAIpQLSfkol5VURTq49Uu87m4THFHPEMPlaurTA--JiKTYDkMjwFcRg/viewform?embedded=true",
-  "KS5": "https://docs.google.com/forms/d/e/1FAIpQLSeXBfJZQ8A396IGv4MC5A2S2aGAv5KHPb0KxJXZrAukcHedaA/viewform?embedded=true",
-  "KS6": "https://docs.google.com/forms/d/e/1FAIpQLSdf0EPdyl6-ZPRrOunLcR0AAXB9rbanCHPbQXWJvobxQGL6zA/viewform?embedded=true",
-  "KS7": "https://docs.google.com/forms/d/e/1FAIpQLSeAgek7fPvBQVgo7sHQHEq-UoZBVF1xt8kmzMymkUvizoJ2Jg/viewform?embedded=true",
-  "KS8": "https://docs.google.com/forms/d/e/1FAIpQLSe5KS7crQw7Y8_KNzsQ5HvHm6X7IcGswNvscnRUKJwPqOvzvQ/viewform?embedded=true",
-  "LA": "https://docs.google.com/forms/d/e/1FAIpQLSdrleojFuHD7MyrSdjtGXCq6bl6AFzs0nXfmtFe7AVJ6g-6qQ/viewform?embedded=true",
-  "LH": "https://docs.google.com/forms/d/e/1FAIpQLSdCnxwWvL53IQSq7nRFhBFn2ovOs1HanTPQGrAfEj9-n_CZlg/viewform?embedded=true",
-  "LH2": "https://docs.google.com/forms/d/e/1FAIpQLSeGiWuBCDnxlxitsy9nVemTyaILSXIgKkwz2Xg3Gs0YabqNVg/viewform?embedded=true",
-  "LN": "https://docs.google.com/forms/d/e/1FAIpQLSfEcYXe5JqZOk45FugdJ9L4VgjpPz05IhBUJl5LIfIe__LNhw/viewform?embedded=true",
-  "LN2": "https://docs.google.com/forms/d/e/1FAIpQLSf0tTyowbJb9Zmum0nZcRsQOpj1bPXFcE8nDaWr6Pl1X0st7w/viewform?embedded=true",
-  "LU": "https://docs.google.com/forms/d/e/1FAIpQLSekiOPCuy7nlDebV19Vpxt-ipRBqxIrD1xCTFandGpwUscslA/viewform?embedded=true",
-  "NU01": "https://docs.google.com/forms/d/e/1FAIpQLSedXAT1fREOseLMQSjFANOfYrxFjNOsKWXkoUKwT-zfQw42hg/viewform?embedded=true",
-  "NU02": "https://docs.google.com/forms/d/e/1FAIpQLSePbw99SYbCOey2IMJ9FIFQ3XIjN_SrzgdXRitXpfM44uMPxQ/viewform?embedded=true",
-  "NU04": "https://docs.google.com/forms/d/e/1FAIpQLSdYtKhoPkLqp12aQBkVJ9Sq61SHgE2v03kcJsgIYaRgVFbTaw/viewform?embedded=true",
-  "NU05": "https://docs.google.com/forms/d/e/1FAIpQLSfavCxvHk5G5VuKCOpVRy12a1BrTAdGN66xEiadZqbyPKCPag/viewform?embedded=true",
-};
-
-function getFacilityFormUrl(defaultUrl) {
-  const code = (new URLSearchParams(window.location.search).get("f") || "").toUpperCase();
-  return FACILITY_FORM_URLS[code] || defaultUrl;
-}
-// 適用箇所: appConfig.google_form_url = getFacilityFormUrl(appConfig.google_form_url);
-
-// 施設パラメータ (?f=KS) があれば、その施設のフォームURLに差し替える
-appConfig.google_form_url = getFacilityFormUrl(appConfig.google_form_url);
 let selectedLang = 'ja';
 let callTimer = null;
 let callDuration = 0;
@@ -2277,6 +2223,11 @@ async function uploadVerificationFiles() {
   
   const uploadOverlay = document.getElementById('camera-upload-overlay');
   if (uploadOverlay) uploadOverlay.style.display = 'flex';
+  // 成否にかかわらず、送信中オーバーレイを必ず閉じる。
+  // 電話番号不一致などで保存できない場合も、画面が残り続けないようにする。
+  const hideUploadOverlay = () => {
+    if (uploadOverlay) uploadOverlay.style.display = 'none';
+  };
 
   let isCompleteShown = false;
   const safeShowComplete = () => {
@@ -2289,6 +2240,7 @@ async function uploadVerificationFiles() {
   // 5-second hard safety fallback timer so guests are never stuck
   const fallbackTimer = setTimeout(() => {
     logToServer("Photo Upload Timeout Fallback Triggered");
+    hideUploadOverlay();
     safeShowComplete();
   }, 5000);
 
@@ -2317,12 +2269,14 @@ async function uploadVerificationFiles() {
           if (res && res.status === 'error') {
             alert("【GASエラー】" + res.message);
           }
+          hideUploadOverlay();
           safeShowComplete();
         })
         .withFailureHandler((err) => {
           clearTimeout(fallbackTimer);
           alert("【GAS実行エラー】" + err.toString());
           console.error("GAS photo upload failed:", err);
+          hideUploadOverlay();
           safeShowComplete();
         })
         .uploadVerificationMedia(capturedBase64Photo, "", inputPhoneNumber);
@@ -2339,8 +2293,9 @@ async function uploadVerificationFiles() {
       logToServer("Photo Upload Response Received", JSON.stringify(data));
       if (data && data.status === 'error') {
         alert("【保存エラー】写真の保存に失敗しました。フロントデスクにお声がけください。\n詳細: " + data.message);
-        if (uploadOverlay) uploadOverlay.style.display = 'none';
-        return; // 完了画面には進まない
+        hideUploadOverlay();
+        safeShowComplete();
+        return;
       }
       safeShowComplete();
     }
@@ -2348,7 +2303,10 @@ async function uploadVerificationFiles() {
     clearTimeout(fallbackTimer);
     console.error("Photo upload failed:", err);
     alert("【通信エラー】写真の送信に失敗しました。もう一度お試しいただくか、フロントデスクにお声がけください。");
-    if (uploadOverlay) uploadOverlay.style.display = 'none';
+    hideUploadOverlay();
+  } finally {
+    // fetch例外・電話番号不一致・GASエラーを含め、必ず表示を消す。
+    hideUploadOverlay();
   }
 }
 
