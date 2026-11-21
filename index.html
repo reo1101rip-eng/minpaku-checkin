@@ -2315,6 +2315,8 @@ async function uploadVerificationFiles() {
     console.error("Photo upload failed:", err);
     alert("【通信エラー】写真の送信に失敗しました。もう一度お試しいただくか、フロントデスクにお声がけください。");
     hideUploadOverlay();
+    // 通信に失敗しても画面を止めず、チェックイン完了画面へ進める。
+    safeShowComplete();
   } finally {
     // fetch例外・電話番号不一致・GASエラーを含め、必ず表示を消す。
     hideUploadOverlay();
