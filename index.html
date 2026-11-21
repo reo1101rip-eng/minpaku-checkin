@@ -1275,6 +1275,7 @@ let capturedPhotoBlob = null;
 let capturedVideoBlob = null;
 let capturedBase64Photo = "";
 let inputPhoneNumber = "";
+let verificationSource = 'google_form';
 let activeSpeechUtterance = null;
 let speechStartedAt = 0;
 const JAPANESE_GUIDANCE_SPEECH = "当施設をご利用いただき、ありがとうございます。チェックイン前に、重要なルールをご説明します。ごみは、びん・缶・ペットボトルと、それ以外に分け、必ずお部屋の中のごみ箱へ捨ててください。廊下や玄関前など、お部屋の外には置かないでください。また、午後9時以降は、ご滞在中の皆様や近隣住民のかたが快適に過ごせるよう、話し声やテレビの音量等にご配慮ください。お部屋の中の設備の使い方や緊急時の対応は、お部屋のハウスルールをご確認ください。それでは、お電話を終了し、次の手続きへお進みください。";
@@ -1473,6 +1474,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       localStorage.removeItem('minpaku_step');
       localStorage.removeItem('minpaku_session_id');
       localStorage.removeItem('minpaku_lang');
+      localStorage.removeItem('minpaku_verification_source');
       sessionId = '';
       window.location.href = window.location.origin + window.location.pathname + '?v=' + Date.now();
       return;
@@ -1481,13 +1483,16 @@ window.addEventListener('DOMContentLoaded', async () => {
     const stepParam = urlParams.get('step') || gasParams.step;
     const sessionParam = urlParams.get('session_id') || gasParams.session_id;
     const langParam = urlParams.get('lang') || gasParams.lang;
+    const sourceParam = urlParams.get('source') || gasParams.source;
 
     if (stepParam === 'verification') {
       sessionId = sessionParam || generateSessionId();
       if (langParam) selectedLang = langParam;
+      verificationSource = sourceParam === 'email' ? 'email' : 'google_form';
       localStorage.setItem('minpaku_step', 'verification');
       localStorage.setItem('minpaku_session_id', sessionId);
       localStorage.setItem('minpaku_lang', selectedLang);
+      localStorage.setItem('minpaku_verification_source', verificationSource);
       proceedToVerification();
       return;
     }
@@ -1496,6 +1501,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     // a previous verification screen from iPhone/Android local storage.
     localStorage.removeItem('minpaku_step');
     localStorage.removeItem('minpaku_session_id');
+    localStorage.removeItem('minpaku_verification_source');
     sessionId = '';
   }
 
@@ -2005,6 +2011,8 @@ function proceedToForm() {
   localStorage.setItem('minpaku_step', 'form');
   localStorage.setItem('minpaku_session_id', sessionId);
   localStorage.setItem('minpaku_lang', selectedLang);
+  verificationSource = 'google_form';
+  localStorage.setItem('minpaku_verification_source', verificationSource);
   
   showStep('form');
   logToServer("Google Form Screen Shown", "Iframe loading started with sessionId: " + sessionId);
@@ -2040,6 +2048,8 @@ function proceedToVerification() {
   localStorage.setItem('minpaku_step', 'verification');
   localStorage.setItem('minpaku_session_id', sessionId);
   localStorage.setItem('minpaku_lang', selectedLang);
+  verificationSource = localStorage.getItem('minpaku_verification_source') || 'google_form';
+  localStorage.setItem('minpaku_verification_source', verificationSource);
 
   logToServer("Google Form Form Completed", "User finished form submission");
   showStep('meet');
@@ -2258,7 +2268,8 @@ async function uploadVerificationFiles() {
       action: "upload_verification",
       phone_number: inputPhoneNumber,
       photo: capturedBase64Photo,
-      video: ""
+      video: "",
+      source: verificationSource
     };
 
     if (isGasEnv()) {
@@ -2279,7 +2290,7 @@ async function uploadVerificationFiles() {
           hideUploadOverlay();
           safeShowComplete();
         })
-        .uploadVerificationMedia(capturedBase64Photo, "", inputPhoneNumber);
+        .uploadVerificationMedia(capturedBase64Photo, "", inputPhoneNumber, verificationSource);
     } else {
       const gasRes = await fetch(GAS_API_URL, {
         method: "POST",
