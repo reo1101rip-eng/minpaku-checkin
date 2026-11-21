@@ -2278,14 +2278,13 @@ async function uploadVerificationFiles() {
           clearTimeout(fallbackTimer);
           logToServer("Photo Upload Complete (GAS)");
           if (res && res.status === 'error') {
-            alert("【GASエラー】" + res.message);
+            console.warn("GAS photo upload returned an error:", res.message);
           }
           hideUploadOverlay();
           safeShowComplete();
         })
         .withFailureHandler((err) => {
           clearTimeout(fallbackTimer);
-          alert("【GAS実行エラー】" + err.toString());
           console.error("GAS photo upload failed:", err);
           hideUploadOverlay();
           safeShowComplete();
@@ -2303,7 +2302,7 @@ async function uploadVerificationFiles() {
       clearTimeout(fallbackTimer);
       logToServer("Photo Upload Response Received", JSON.stringify(data));
       if (data && data.status === 'error') {
-        alert("【保存エラー】写真の保存に失敗しました。フロントデスクにお声がけください。\n詳細: " + data.message);
+        console.warn("Photo upload returned an error:", data.message);
         hideUploadOverlay();
         safeShowComplete();
         return;
@@ -2313,7 +2312,6 @@ async function uploadVerificationFiles() {
   } catch (err) {
     clearTimeout(fallbackTimer);
     console.error("Photo upload failed:", err);
-    alert("【通信エラー】写真の送信に失敗しました。もう一度お試しいただくか、フロントデスクにお声がけください。");
     hideUploadOverlay();
     // 通信に失敗しても画面を止めず、チェックイン完了画面へ進める。
     safeShowComplete();
